@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Theme.BaseApp.Starting" parent="Theme.SplashScreen">
+    <item name="windowSplashScreenBackground">@color/screenBg</item>
+
+    <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher_crackup_round</item>
+
+    <item name="windowSplashScreenAnimationDuration">1000</item>
+    <item name="postSplashScreenTheme">@style/Theme.BaseApp</item>
+    </style>
+
+    <style name="Theme.BaseApp" parent="android:Theme.Material.Light.NoActionBar" />
+</resources>

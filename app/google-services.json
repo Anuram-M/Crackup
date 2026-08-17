@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "542884677499",
+    "project_id": "crackup-4e758",
+    "storage_bucket": "crackup-4e758.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:542884677499:android:3c33008987fd80cf139fde",
+        "android_client_info": {
+          "package_name": "com.kumar.crackup"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCKYXlkm4l7nHTkUUlqEPzz3LuO7v410BU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
