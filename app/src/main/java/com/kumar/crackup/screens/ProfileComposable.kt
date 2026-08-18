@@ -101,7 +101,7 @@ fun ProfileContent(navHostController: NavHostController, user: UserModel?, onLog
 
         )
     val emojiBoxSize = 40.dp
-    val profileText = user?.name?.toInitials()
+    val profileText = user?.name?.first().toString()
     user?.let {
 
         Box(

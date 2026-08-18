@@ -1,9 +1,12 @@
 package com.kumar.crackup.util
 
+import com.kumar.crackup.model.DayStreak
 import com.kumar.crackup.model.FeatureItem
 import com.kumar.crackup.model.LocalizedInstruction
 import com.kumar.crackup.model.ServiceModel
 import com.kumar.crackup.model.StatItem
+import com.kumar.crackup.model.TopicProgress
+import com.kumar.crackup.model.WeekStreak
 
 object AppContentUtil {
 
@@ -145,4 +148,118 @@ object AppContentUtil {
                 subTitle = "Improve speed and accuracy with practice tests"
             )
         )
+
+    val dayStreaks = listOf(
+        DayStreak(
+            label = "Monday",
+            completed = true
+        ),
+        DayStreak(
+            label = "Tuesday",
+            completed = true
+        ),
+        DayStreak(
+            label = "Wednesday",
+            completed = true
+        ),
+        DayStreak(
+            label = "Thursday",
+            completed = false
+        ),
+        DayStreak(
+            label = "Friday",
+            completed = false
+        ),
+        DayStreak(
+            label = "Saturday",
+            completed = false
+        ),
+        DayStreak(
+            label = "Sunday",
+            completed = false
+        ),
+
+        )
+
+    val weekStreaks = listOf(
+        WeekStreak(
+            label = "",
+            daysCompleted = 4,
+        ),
+        WeekStreak(
+            label = "",
+            daysCompleted = 6,
+        ),
+        WeekStreak(
+            label = "",
+            daysCompleted = 3,
+        )
+    )
+
+    val topicsProgress = listOf(
+        TopicProgress(
+            name = "Previous Year Questions",
+            completedPercent = .37f,
+            accuracyPercent = .85f,
+            questionsDone = 37,
+            questionsTotal = 100
+        ),
+        TopicProgress(
+            name = "General Tamil",
+            completedPercent = .37f,
+            accuracyPercent = .85f,
+            questionsDone = 37,
+            questionsTotal = 100
+        ),
+        TopicProgress(
+            name = "General Science",
+            completedPercent = .37f,
+            accuracyPercent = .85f,
+            questionsDone = 37,
+            questionsTotal = 100
+        ),
+        TopicProgress(
+            name = "Geography",
+            completedPercent = .37f,
+            accuracyPercent = .85f,
+            questionsDone = 37,
+            questionsTotal = 100
+        ),
+        TopicProgress(
+            name = "Indian History",
+            completedPercent = .37f,
+            accuracyPercent = .85f,
+            questionsDone = 37,
+            questionsTotal = 100
+        ),
+        TopicProgress(
+            name = "Indian Polity",
+            completedPercent = .37f,
+            accuracyPercent = .85f,
+            questionsDone = 37,
+            questionsTotal = 100
+        ),
+        TopicProgress(
+            name = "Indian Economy and Development",
+            completedPercent = .37f,
+            accuracyPercent = .85f,
+            questionsDone = 37,
+            questionsTotal = 100
+        ),
+        TopicProgress(
+            name = "Tamil Nadu History",
+            completedPercent = .37f,
+            accuracyPercent = .85f,
+            questionsDone = 37,
+            questionsTotal = 100
+        ),
+        TopicProgress(
+            name = "Aptitude",
+            completedPercent = .37f,
+            accuracyPercent = .85f,
+            questionsDone = 37,
+            questionsTotal = 100
+        )
+
+    )
 }

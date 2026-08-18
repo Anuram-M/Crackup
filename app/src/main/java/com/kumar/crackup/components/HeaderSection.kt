@@ -40,6 +40,7 @@ import androidx.compose.ui.unit.sp
 import com.kumar.crackup.templates.BodyText
 import com.kumar.crackup.templates.HeightSpacer
 import com.kumar.crackup.templates.SmallHeightSpacer
+import com.kumar.crackup.ui.theme.amber
 import com.kumar.crackup.ui.theme.lightBlue
 import com.kumar.crackup.ui.theme.textBlack
 
@@ -350,7 +351,7 @@ fun HeaderSection(
                             Column {
                                 Surface(
                                     shape = RoundedCornerShape(8.dp),
-                                    color = Color(0xFFFFD700)
+                                    color = amber
                                 ) {
                                     Text(
                                         text = "DAILY CHALLENGE",
@@ -421,7 +422,7 @@ fun HeaderSection(
                                 .fillMaxWidth()
                                 .height(8.dp)
                                 .clip(RoundedCornerShape(4.dp)),
-                            color = Color(0xFFFFD700),
+                            color = amber,
                             trackColor = Color.Gray.copy(alpha = 0.2f)
                         )
                     }
