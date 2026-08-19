@@ -41,6 +41,8 @@ import com.kumar.crackup.templates.BodyText
 import com.kumar.crackup.templates.HeightSpacer
 import com.kumar.crackup.templates.SmallHeightSpacer
 import com.kumar.crackup.ui.theme.amber
+import com.kumar.crackup.ui.theme.bodyFontLargeSize
+import com.kumar.crackup.ui.theme.bodyFontTinySize
 import com.kumar.crackup.ui.theme.lightBlue
 import com.kumar.crackup.ui.theme.textBlack
 
@@ -343,51 +345,43 @@ fun HeaderSection(
                     Column(
                         modifier = Modifier.padding(20.dp)
                     ) {
+                        Box(
+                            modifier = Modifier.background(color = amber, shape = RoundedCornerShape(20.dp))
+                        ) {
+                            BodyText(
+                                text = "DAILY CHALLENGE",
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                                textColor = Color.White,
+                                textSize = 10.sp,
+                                fontWeight = FontWeight.ExtraBold
+                            )
+                        }
+
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Column {
-                                Surface(
-                                    shape = RoundedCornerShape(8.dp),
-                                    color = amber
-                                ) {
-                                    Text(
-                                        text = "DAILY CHALLENGE",
-                                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                                        color = Color.Black,
-                                        fontSize = 10.sp,
-                                        fontWeight = FontWeight.ExtraBold
-                                    )
-                                }
-                                Spacer(modifier = Modifier.height(6.dp))
-                                Text(
-                                    text = "General Knowledge",
-                                    color = textBlack,
-                                    fontSize = 20.sp,
-                                    fontWeight = FontWeight.Bold
-                                )
-                            }
+                            BodyText(
+                                text = "General Knowledge",
+                                textColor = textBlack,
+                                textSize = bodyFontLargeSize,
+                                fontWeight = FontWeight.SemiBold
+                            )
 
                             // CTA Play Button
                             Button(
                                 onClick = onStartQuizClick,
                                 colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color(0xFFFFD700)
+                                    lightBlue
                                 ),
                                 shape = RoundedCornerShape(14.dp)
                             ) {
-                                Icon(
-                                    imageVector = Icons.Default.PlayArrow,
-                                    contentDescription = "Start",
-                                    tint = Color.Black
-                                )
-                                Spacer(modifier = Modifier.width(4.dp))
-                                Text(
-                                    text = "PLAY",
-                                    color = Color.Black,
-                                    fontWeight = FontWeight.Bold
+                                BodyText(
+                                    text = "Continue",
+                                    textColor = Color.White,
+                                    textSize = bodyFontTinySize,
+                                    fontWeight = FontWeight.SemiBold
                                 )
                             }
                         }
@@ -400,15 +394,15 @@ fun HeaderSection(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
-                            Text(
+                            BodyText(
                                 text = "Daily Goal Progress",
-                                color = textBlack.copy(alpha = 0.8f),
-                                fontSize = 12.sp
+                                textColor = textBlack.copy(alpha = 0.8f),
+                                textSize = bodyFontTinySize
                             )
-                            Text(
+                            BodyText(
                                 text = "${(dailyProgress * 100).toInt()}%",
-                                color = lightBlue,
-                                fontSize = 12.sp,
+                                textColor = lightBlue,
+                                textSize = 12.sp,
                                 fontWeight = FontWeight.Bold
                             )
                         }
