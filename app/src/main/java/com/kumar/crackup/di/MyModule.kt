@@ -1,13 +1,10 @@
 package com.kumar.crackup.di
 
-import com.google.api.Context
-import com.kumar.crackup.MyApplication
-import com.pierfrancescosoffritti.androidyoutubeplayer.BuildConfig
 import com.kumar.crackup.service.ApiService
+import com.pierfrancescosoffritti.androidyoutubeplayer.BuildConfig
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor

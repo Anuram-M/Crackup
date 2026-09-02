@@ -4,10 +4,9 @@ import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.NavController
-import com.google.firebase.auth.FirebaseUser
+import com.kumar.crackup.auth.CreateAccountFormInput
+import com.kumar.crackup.auth.SignInFormInput
 import com.kumar.crackup.model.Exam
-import com.kumar.crackup.model.FireUser
 import com.kumar.crackup.model.NewQuestion
 import com.kumar.crackup.model.QueryModel
 import com.kumar.crackup.model.SubTopic
@@ -15,13 +14,10 @@ import com.kumar.crackup.model.TamilUnit
 import com.kumar.crackup.model.Topic
 import com.kumar.crackup.model.TopicType
 import com.kumar.crackup.states.NavStateClass
-import com.kumar.crackup.util.CreateAccountFormInput
 import com.kumar.crackup.util.FirebaseUtil
 import com.kumar.crackup.util.LoadingManager
 import com.kumar.crackup.util.NetworkConnectivityObserver
 import com.kumar.crackup.util.NetworkStatus
-import com.kumar.crackup.util.PreferenceUtil
-import com.kumar.crackup.util.SignInFormInput
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.channels.Channel
@@ -30,8 +26,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch

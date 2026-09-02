@@ -1,7 +1,6 @@
 package com.kumar.crackup.util
 
 import androidx.compose.ui.graphics.Color
-import com.kumar.crackup.states.PasswordStrengthState
 import com.kumar.crackup.ui.theme.cOrange
 import com.kumar.crackup.ui.theme.cYellow
 import com.kumar.crackup.ui.theme.forestGreen

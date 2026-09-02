@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -21,8 +20,6 @@ import androidx.compose.ui.unit.dp
 import com.kumar.crackup.model.StatItem
 import com.kumar.crackup.ui.theme.bodyFont
 import com.kumar.crackup.ui.theme.bodyFontLargeSize
-import com.kumar.crackup.ui.theme.bodyFontSize
-import com.kumar.crackup.ui.theme.bodyFontSmallSize
 import com.kumar.crackup.ui.theme.bodyFontTinySize
 import com.kumar.crackup.ui.theme.lightBlue
 

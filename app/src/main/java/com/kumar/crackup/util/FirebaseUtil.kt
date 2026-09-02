@@ -2,7 +2,6 @@ package com.kumar.crackup.util
 
 import android.content.Context
 import android.util.Log
-import androidx.navigation.NavController
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
@@ -10,11 +9,9 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.getField
-import com.google.firebase.firestore.toObject
 import com.kumar.crackup.UserModel
+import com.kumar.crackup.auth.CreateAccountFormInput
 import com.kumar.crackup.model.Exam
-import com.kumar.crackup.model.FireUser
 import com.kumar.crackup.model.NewQuestion
 import com.kumar.crackup.model.QueryModel
 import com.kumar.crackup.model.Question
@@ -24,7 +21,6 @@ import com.kumar.crackup.model.Topic
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf

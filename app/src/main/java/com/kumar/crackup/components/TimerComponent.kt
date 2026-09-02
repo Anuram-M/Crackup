@@ -5,14 +5,11 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableLongStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -26,7 +23,6 @@ import com.kumar.crackup.templates.SmallWidthSpacer
 import com.kumar.crackup.ui.theme.bodyFontSize
 import com.kumar.crackup.ui.theme.lightBlue
 import kotlinx.coroutines.delay
-import kotlinx.serialization.StringFormat
 
 @Composable
 fun TimerComponent(

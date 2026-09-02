@@ -1,6 +1,6 @@
 package com.kumar.crackup.model
 
-import com.kumar.crackup.screens.DownloadState
+import com.kumar.crackup.currentaffairs.DownloadState
 
 data class CurrentAffairsPDFItem(
     val id: String,

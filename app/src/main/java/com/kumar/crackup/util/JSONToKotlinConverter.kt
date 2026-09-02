@@ -1,15 +1,12 @@
 package com.kumar.crackup.util
 
 import android.content.Context
-import com.kumar.crackup.model.NewQuestion
 import com.kumar.crackup.model.Question
-import com.kumar.crackup.model.toNewQuestion
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
-import kotlin.collections.emptyList
 
 object JSONToKotlinConverter {
 

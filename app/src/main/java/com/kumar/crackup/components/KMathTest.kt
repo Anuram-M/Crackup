@@ -1,155 +1,5 @@
 package com.kumar.crackup.components
 
-import android.annotation.SuppressLint
-import android.webkit.WebSettings
-import android.webkit.WebView
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.viewinterop.AndroidView
-
-//@SuppressLint("SetJavaScriptEnabled")
-//@Composable
-//fun KMathText(
-//    text: String,
-//    modifier: Modifier = Modifier,
-//    textColor: Color = Color.Unspecified,
-//    textSizePx: Int = 16
-//) {
-////    val hexColor = if (textColor != Color.Unspecified) {
-////        String.format("#%06X", 0xFFFFFF and textColor.toArgb())
-////    } else {
-////        "#000000"
-////    }
-////
-////    val htmlContent = """
-////        <!DOCTYPE html>
-////        <html>
-////        <head>
-////            <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-////            <!-- Local Asset Paths -->
-////            <link rel="stylesheet" href="file:///android_asset/katex/katex.min.css">
-////            <script src="file:///android_asset/katex/katex.min.js"></script>
-////            <script src="file:///android_asset/katex/contrib/auto-render.min.js"></script>
-////            <style>
-////                body {
-////                    color: $hexColor;
-////                    font-size: ${textSizePx}px;
-////                    margin: 0;
-////                    padding: 0;
-////                    background-color: transparent;
-////                    font-family: sans-serif;
-////                }
-////            </style>
-////        </head>
-////        <body>
-////            <div id="math">$text</div>
-////            <script>
-////                document.addEventListener("DOMContentLoaded", function() {
-////                    renderMathInElement(document.getElementById("math"), {
-////                        delimiters: [
-////                            {left: "$$", right: "$$", display: true},
-////                            {left: "$", right: "$", display: inline}
-////                        ]
-////                    });
-////                });
-////            </script>
-////        </body>
-////        </html>
-////    """.trimIndent()
-////
-////    AndroidView(
-////        modifier = modifier.fillMaxWidth(),
-////        factory = { context ->
-////            WebView(context).apply {
-////                settings.javaScriptEnabled = true
-////                settings.allowFileAccess = true // 👈 Required to access local assets
-////                settings.cacheMode = WebSettings.LOAD_DEFAULT
-////                setBackgroundColor(0) // Transparent background
-////            }
-////        },
-////        update = { webView ->
-////            webView.loadDataWithBaseURL("file:///android_asset/katex/", htmlContent, "text/html", "UTF-8", null)
-////        }
-////    )
-//
-//    val hexColor = if (textColor != Color.Unspecified) {
-//        String.format("#%06X", 0xFFFFFF and textColor.toArgb())
-//    } else {
-//        "#000000"
-//    }
-//
-//    // Escape backslashes for JS context
-//    val safeText = text
-//        .replace("\\", "\\\\")
-//        .replace("`", "\\`")
-//
-//    val htmlContent = """
-//        <!DOCTYPE html>
-//        <html>
-//        <head>
-//            <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-//            <link rel="stylesheet" href="file:///android_asset/katex/katex.min.css">
-//            <script src="file:///android_asset/katex/katex.min.js"></script>
-//            <script src="file:///android_asset/katex/contrib/auto-render.min.js"></script>
-//            <style>
-//                body {
-//                    color: $hexColor;
-//                    font-size: ${textSizePx}px;
-//                    margin: 0;
-//                    padding: 0;
-//                    background-color: transparent;
-//                    font-family: sans-serif;
-//                }
-//            </style>
-//        </head>
-//        <body>
-//            <div id="math"></div>
-//            <script>
-//                document.addEventListener("DOMContentLoaded", function() {
-//                    var container = document.getElementById("math");
-//                    container.textContent = `$safeText`;
-//
-//                    renderMathInElement(container, {
-//                        delimiters: [
-//                            {left: "$$", right: "$$", display: true},
-//                            {left: "$", right: "$", display: inline},
-//                            {left: "\\(", right: "\\)", display: inline},
-//                            {left: "\\[", right: "\\]", display: true}
-//                        ],
-//                        throwOnError: false
-//                    });
-//                });
-//            </script>
-//        </body>
-//        </html>
-//    """.trimIndent()
-//
-//    AndroidView(
-//        modifier = modifier.fillMaxWidth(),
-//        factory = { context ->
-//            WebView(context).apply {
-//                settings.javaScriptEnabled = true
-//                settings.allowFileAccess = true
-//                settings.allowContentAccess = true
-//                settings.domStorageEnabled = true
-//                settings.cacheMode = WebSettings.LOAD_NO_CACHE
-//                setBackgroundColor(0) // Transparent background
-//            }
-//        },
-//        update = { webView ->
-//            webView.loadDataWithBaseURL(
-//                "file:///android_asset/katex/",
-//                htmlContent,
-//                "text/html",
-//                "UTF-8",
-//                null
-//            )
-//        }
-//    )
-//}
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.width
@@ -157,11 +7,11 @@ import androidx.compose.foundation.text.InlineTextContent
 import androidx.compose.foundation.text.appendInlineContent
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
-//import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
-//import androidx.compose.ui.Modifier
-//import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.Placeholder
 import androidx.compose.ui.text.PlaceholderVerticalAlign
