@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.kumar.crackup.home.Login
 import com.kumar.crackup.templates.BodyText
 import com.kumar.crackup.ui.theme.lightBlue
 import com.kumar.crackup.util.PreferenceUtil
@@ -40,7 +41,7 @@ fun OnboardingComposable(navHostController: NavHostController, myViewModel: MyVi
 
         TextButton(modifier = Modifier.align(Alignment.TopEnd), onClick = {
             PreferenceUtil.putBoolean("isOnBoardingComplete", true)
-            navHostController.navigate("login") {
+            navHostController.navigate(Login) {
                 popUpTo(0)
             }
         }) {

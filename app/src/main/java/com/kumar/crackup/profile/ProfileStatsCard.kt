@@ -1,4 +1,4 @@
-package com.kumar.crackup.templates
+package com.kumar.crackup.profile
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -17,14 +17,18 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
+import com.kumar.crackup.home.HomeNav
 import com.kumar.crackup.model.StatItem
+import com.kumar.crackup.templates.ColoredButton
 import com.kumar.crackup.ui.theme.bodyFont
 import com.kumar.crackup.ui.theme.bodyFontLargeSize
 import com.kumar.crackup.ui.theme.bodyFontTinySize
 import com.kumar.crackup.ui.theme.lightBlue
+import com.kumar.crackup.util.AppContentUtil
 
 @Composable
-fun ProfileStatsCard(stats: List<StatItem>, modifier: Modifier = Modifier) {
+fun ProfileStatsCard(stats: List<StatItem>, modifier: Modifier = Modifier, navHostController: NavHostController) {
 
 
 
@@ -71,7 +75,13 @@ fun ProfileStatsCard(stats: List<StatItem>, modifier: Modifier = Modifier) {
                 ColoredButton(
                     roundness = 10.dp,
                     buttonText = "Take a Test", buttonColor = lightBlue, textColor = Color.White,
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp, vertical = 15.dp)) { }
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp, vertical = 15.dp)
+                ) {
+                    navHostController.navigate(HomeNav(
+                        route = "home",
+                        section = "stickyHeader"
+                    ))
+                }
             }
 
         }

@@ -1,5 +1,6 @@
 package com.kumar.crackup.home
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -19,6 +20,7 @@ import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -49,7 +51,7 @@ data class NavigationSection(
 )
 
 @Composable
-fun HomeComposable(navHostController: NavHostController, myViewModel: MyViewModel) {
+fun HomeComposable(navHostController: NavHostController, myViewModel: MyViewModel, targetSection: String? = null) {
     val user by myViewModel.currentUser.collectAsStateWithLifecycle()
     val listState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
@@ -72,6 +74,25 @@ fun HomeComposable(navHostController: NavHostController, myViewModel: MyViewMode
     val showContact = remember {
         mutableStateOf(PreferenceUtil.getBoolean(PrefConstants.SHOW_CONTACT))
     }
+
+    val sections = remember {
+        mapOf(
+            "header" to 0,
+            "stickyHeader" to 1,
+        )
+    }
+    LaunchedEffect(targetSection) {
+        Log.d("LITAG", "HomeComposable: target:  ${targetSection}")
+        targetSection?.let { sectionKey ->
+            val index = sections[sectionKey]
+            Log.d("LITAG", "HomeComposable: ${index}")
+            if(index != null) {
+                Log.d("LITAG", "HomeComposable: scroll to: ${index}")
+                listState.animateScrollToItem(index)
+            }
+        }
+    }
+
     Box(modifier = Modifier
         .fillMaxSize()
         .background(screenBackground)) {
@@ -82,7 +103,7 @@ fun HomeComposable(navHostController: NavHostController, myViewModel: MyViewMode
             state = listState
         ) {
 
-            item {
+            item(key = "header") {
                 HeaderSection(
                     userName = user?.name.toString(),
                     onStartQuizClick = {
@@ -91,8 +112,10 @@ fun HomeComposable(navHostController: NavHostController, myViewModel: MyViewMode
                 )
             }
 
-            stickyHeader {
-                Column(modifier = Modifier.shadow(elevation = 4.dp).background(Color.White)) {
+            stickyHeader(key = "stickyHeader") {
+                Column(modifier = Modifier
+                    .shadow(elevation = 4.dp)
+                    .background(Color.White)) {
                     Text(
                         text = "Explore:",
                         style = TextStyle(
@@ -135,7 +158,9 @@ fun HomeComposable(navHostController: NavHostController, myViewModel: MyViewMode
             item {
                 HorizontalPager(
                     state = pagerState,
-                    modifier = Modifier.fillMaxWidth().heightIn(min = 400.dp, max = 2000.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .heightIn(min = 400.dp, max = 2000.dp),
                     verticalAlignment = Alignment.Top
                 ) { page ->
                     when(page) {
@@ -147,11 +172,12 @@ fun HomeComposable(navHostController: NavHostController, myViewModel: MyViewMode
                 }
             }
         }
-                if(showContact.value) {
-                    ContactUsDialog(onDismissRequest = {
-                        showContact.value = false
-                        PreferenceUtil.putBoolean(PrefConstants.SHOW_CONTACT, false)
-                    })
-                }
+        //needs to identify its usage later
+//                if(showContact.value) {
+//                    ContactUsDialog(onDismissRequest = {
+//                        showContact.value = false
+//                        PreferenceUtil.putBoolean(PrefConstants.SHOW_CONTACT, false)
+//                    })
+//                }
     }
 }

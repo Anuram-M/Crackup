@@ -1,5 +1,6 @@
 package com.kumar.crackup.util
 
+import com.kumar.crackup.currentaffairs.CACategoryModel
 import com.kumar.crackup.model.DayStreak
 import com.kumar.crackup.model.FeatureItem
 import com.kumar.crackup.model.LocalizedInstruction
@@ -261,5 +262,28 @@ object AppContentUtil {
             questionsTotal = 100
         )
 
+    )
+
+    const val HOME_ROUTE = "home?targetSection=header"
+    const val HOME_FROM_PROFILE_ROUTE = "home?targetSection=stickyHeader"
+    val currentAffairsCategories = listOf(
+        CACategoryModel(
+            category = "ca_daily",
+            emoji = "📰",
+            title = "Daily Current Affairs",
+            subTitle = "Check our daily current affairs with detailed explanations."
+        ),
+        CACategoryModel(
+            category = "ca_monthly",
+            emoji = "📅",
+            title = "Monthly Current Affairs",
+            subTitle = "Check our monthly current affairs with detailed explanations."
+        ),
+        CACategoryModel(
+            category = "ca_quiz",
+            emoji = "🏆",
+            title = "Current Affairs Quiz",
+            subTitle = "Take a quiz to test your knowledge of current affairs of Tamil Nadu and India"
+        ),
     )
 }

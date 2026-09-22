@@ -258,7 +258,7 @@ object FirebaseUtil {
                 .get()
                 .await()
                 .documents
-                .mapNotNull { it.toObject(NewQuestion::class.java) }
+                .mapNotNull { it.toObject(NewQuestion::class.java) }.take(10)
             Log.d("LUCKY", "getSubTopics: ${result.size}, ${result}")
                 return result
         } catch (e: Exception) {

@@ -40,6 +40,7 @@ import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -56,21 +57,35 @@ import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavDestination.Companion.hasRoute
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import androidx.navigation.toRoute
 import com.kumar.crackup.about.AboutComposable
 import com.kumar.crackup.auth.LoginComposable
 import com.kumar.crackup.auth.SignupComposable
 import com.kumar.crackup.components.CustomBottomNavigation
+import com.kumar.crackup.contact.ContactComposable
+import com.kumar.crackup.currentaffairs.ArticleDetailPreview
 import com.kumar.crackup.currentaffairs.CurrentAffairsScreen
+import com.kumar.crackup.currentaffairs.DailyCurrentAffairsScreen
+import com.kumar.crackup.currentaffairs.DynamicMonthCurrentAffairsComposable
+import com.kumar.crackup.currentaffairs.Entry
+import com.kumar.crackup.currentaffairs.NewsAffairsList
 import com.kumar.crackup.faq.FaqComposable
 import com.kumar.crackup.home.HomeComposable
+import com.kumar.crackup.home.HomeNav
+import com.kumar.crackup.home.Login
+import com.kumar.crackup.home.OnBoarding
 import com.kumar.crackup.notification.NotificationComposable
 import com.kumar.crackup.onboarding.OnboardingComposable
 import com.kumar.crackup.profile.ProfileComposable
 import com.kumar.crackup.progress.ProgressComposable
+import com.kumar.crackup.states.BottomItem
 import com.kumar.crackup.subscription.SubscriptionComposable
 import com.kumar.crackup.templates.BodyText
 import com.kumar.crackup.templates.SmallWidthSpacer
@@ -87,6 +102,7 @@ import com.kumar.crackup.ui.theme.bodyFontTinySize
 import com.kumar.crackup.ui.theme.lightBlue
 import com.kumar.crackup.ui.theme.screenBackground
 import com.kumar.crackup.ui.theme.textBlack
+import com.kumar.crackup.util.AppContentUtil
 import com.kumar.crackup.util.NetworkStatus
 import com.kumar.crackup.util.PreferenceUtil
 import com.kumar.crackup.viewmodel.MyViewModel
@@ -123,13 +139,23 @@ fun MainCompose(myViewModel: MyViewModel = hiltViewModel()) {
     val context = LocalContext.current.applicationContext
     val currentRoute = navState?.destination?.route
     val coroutineScope = rememberCoroutineScope()
-    val startDestination = if(PreferenceUtil.getBoolean("isLoggedIn") == true)  "home"
-    else if(!PreferenceUtil.getBoolean("isOnBoardingComplete")) "onboard"
-    else "login"
-    val impScreens = listOf("home", "currentaffairs", "progress", "profile")
+    val startDestination = if(PreferenceUtil.getBoolean("isLoggedIn") == true) HomeNav()
+    else if(!PreferenceUtil.getBoolean("isOnBoardingComplete")) OnBoarding
+    else Login
+    val impScreens = listOf(AppContentUtil.HOME_ROUTE, AppContentUtil.HOME_FROM_PROFILE_ROUTE, "home", "currentaffairs", "progress", "profile")
     val authScreens = listOf("login", "signup", "onboard")
-    val shouldShowBottomBar = currentRoute in impScreens
-    val shouldHideTopBar = currentRoute in authScreens
+    val shouldShowBottomBar = when {
+        navState?.destination?.hasRoute<HomeNav>() == true -> true
+        currentRoute in impScreens -> true
+        else -> false
+    }
+    val shouldHideTopBar = when {
+        navState?.destination?.hasRoute<Login>() == true -> true
+        navState?.destination?.hasRoute<OnBoarding>() == true -> true
+        currentRoute in authScreens -> true
+        else -> false
+    }
+//    currentRoute in authScreens
     val screenTitle = when (currentRoute) {
         "home" -> "Home"
         "profile" -> "User Profile"
@@ -146,6 +172,16 @@ fun MainCompose(myViewModel: MyViewModel = hiltViewModel()) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val networkStatus by myViewModel.networkStatus.collectAsStateWithLifecycle()
     val isOffline = networkStatus == NetworkStatus.Unavailable
+
+    val currentBottomRoute = remember(currentRoute) {
+        when{
+            navState?.destination?.hasRoute<HomeNav>() == true -> BottomItem.Home.routeKey
+            currentRoute.equals("currentaffairs") -> BottomItem.CurrentAffairs.routeKey
+            currentRoute.equals("progress") -> BottomItem.Progress.routeKey
+            currentRoute.equals("profile") -> BottomItem.Profile.routeKey
+            else -> BottomItem.Home.routeKey
+        }
+    }
     ModalNavigationDrawer(
         drawerState = drawerState,
         modifier = Modifier.background(Color.Red),
@@ -177,28 +213,30 @@ fun MainCompose(myViewModel: MyViewModel = hiltViewModel()) {
                                     .padding(10.dp),
                                 contentDescription = null
                             )
-                            NavigationDrawerItem(icon = {
-                                Icon(
-                                    painter = painterResource(R.drawable.subscription),
-                                    contentDescription = null,
-                                    modifier = Modifier.size(24.dp),
-                                    tint = Color.Black
-                                )
-                            }, label = {
-                                Text(
-                                    "Subscriptions",
-                                    style = TextStyle(
-                                        color = Color.Black,
-                                        fontSize = bodyFontSize,
-                                        fontWeight = FontWeight.Medium
-                                    ),
-                                )
-                            }, selected = false, onClick = {
-                                coroutineScope.launch {
-                                    drawerState.close()
-                                }
-                                navController.navigate("subscription")
-                            })
+                            //hidden for now
+//                            NavigationDrawerItem(
+//                                icon = {
+//                                    Icon(
+//                                        painter = painterResource(R.drawable.subscription),
+//                                        contentDescription = null,
+//                                        modifier = Modifier.size(24.dp),
+//                                        tint = Color.Black
+//                                    )
+//                                }, label = {
+//                                    Text(
+//                                        "Subscriptions",
+//                                        style = TextStyle(
+//                                            color = Color.Black,
+//                                            fontSize = bodyFontSize,
+//                                            fontWeight = FontWeight.Medium
+//                                        ),
+//                                    )
+//                                }, selected = false, onClick = {
+//                                    coroutineScope.launch {
+//                                        drawerState.close()
+//                                    }
+//                                    navController.navigate("subscription")
+//                                })
                             NavigationDrawerItem(icon = {
                                 Icon(
                                     painter = painterResource(R.drawable.faq),
@@ -237,7 +275,14 @@ fun MainCompose(myViewModel: MyViewModel = hiltViewModel()) {
                                         fontWeight = FontWeight.Medium
                                     ),
                                 )
-                            }, selected = false, onClick = {})
+                            }, selected = false, onClick = {
+                                coroutineScope.launch {
+                                    drawerState.close()
+                                }
+                                navController.navigate("contact") {
+                                    popUpTo("home")
+                                }
+                            })
                             NavigationDrawerItem(icon = {
                                 Icon(
                                     painter = painterResource(R.drawable.about_us),
@@ -343,7 +388,10 @@ fun MainCompose(myViewModel: MyViewModel = hiltViewModel()) {
                             title = {
                                 Image(painter = painterResource(R.drawable.logo),
                                     contentDescription = null,
-                                    modifier = Modifier.fillMaxWidth().height(TopAppBarDefaults.MediumAppBarCollapsedHeight).padding(10.dp))
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(TopAppBarDefaults.MediumAppBarCollapsedHeight)
+                                        .padding(10.dp))
 //                                Text(
 //                                    text = screenTitle,
 //                                    style = TextStyle(
@@ -402,7 +450,7 @@ fun MainCompose(myViewModel: MyViewModel = hiltViewModel()) {
             containerColor = screenBackground,
             bottomBar = {
                 if (shouldShowBottomBar)
-                    CustomBottomNavigation { newRoute -> navController.navigate(newRoute) }
+                    CustomBottomNavigation(currentRoute = currentBottomRoute) { newRoute -> navController.navigate(newRoute) }
             },
             floatingActionButton = {}
         ) { innerPadding ->
@@ -437,14 +485,19 @@ fun MainCompose(myViewModel: MyViewModel = hiltViewModel()) {
                     .fillMaxSize()
                     .padding(innerPadding)
             ) {  ->
-                composable("onboard") { OnboardingComposable(navController, myViewModel) }
+                composable<OnBoarding> { OnboardingComposable(navController, myViewModel) }
                 composable("home") { HomeComposable(navController, myViewModel) }
-                composable("login") { LoginComposable(navController, myViewModel) }
+                composable<HomeNav> { backStackEntry ->
+                    val targetSection = backStackEntry.toRoute<HomeNav>().section
+                    HomeComposable(navController, myViewModel, targetSection)
+                }
+                composable<Login> { LoginComposable(navController, myViewModel) }
                 composable("signup") { SignupComposable(navController, myViewModel) }
                 composable("subscription") { SubscriptionComposable() }
                 composable("profile") { ProfileComposable(navController, myViewModel) } //need to be reset once the practice screen is completed
                 composable("about") { AboutComposable() }
                 composable("faq") { FaqComposable() }
+                composable("contact") { ContactComposable() }
                 composable("practice") { PracticeIntroComposable(navController, myViewModel) }
                 composable("progress") { ProgressComposable(navHostController = navController) }
                 composable("test") { Test(navController, myViewModel) }
@@ -453,7 +506,13 @@ fun MainCompose(myViewModel: MyViewModel = hiltViewModel()) {
                 composable("Units") { TamilUnitsComposable(navController, myViewModel) }
                 composable("tamilunitsSub") { UnitSubTopicComposable(navController, myViewModel) }
                 composable("subTopics") { SubTopicsComposable(navController, myViewModel) }
-                composable("currentaffairs") { CurrentAffairsScreen(navController, myViewModel) }
+                composable("currentaffairs") { Entry(navController) }
+                composable("ca_daily") { CurrentAffairsScreen(navController, myViewModel)}
+                composable("ca_details") { ArticleDetailPreview()}
+//                composable("ca_daily") { NewsAffairsList() }
+                composable("ca_monthly") { DynamicMonthCurrentAffairsComposable() }
+                composable("ca_quiz") { CurrentAffairsScreen(navController, myViewModel) }
+                composable("currentaffairsold") { CurrentAffairsScreen(navController, myViewModel) }
                 composable("notification") { NotificationComposable(navController, myViewModel) }
             }
         }

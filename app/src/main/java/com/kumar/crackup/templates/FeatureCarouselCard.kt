@@ -37,7 +37,7 @@ fun FeatureCarouselCard(featureItem: FeatureItem = FeatureItem()) {
         modifier = Modifier
             .heightIn(min = 180.dp)
             .background(Color.Transparent)
-            .widthIn(min = 160.dp)
+            .widthIn(min = 160.dp, max = 500.dp)
 
             .padding(5.dp)
     ) {

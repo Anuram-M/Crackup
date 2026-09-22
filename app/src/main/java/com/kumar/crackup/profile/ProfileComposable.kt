@@ -35,7 +35,6 @@ import com.kumar.crackup.templates.BodyText
 import com.kumar.crackup.templates.ColoredButton
 import com.kumar.crackup.templates.GradientButton
 import com.kumar.crackup.templates.HeaderText
-import com.kumar.crackup.templates.ProfileStatsCard
 import com.kumar.crackup.templates.Selector
 import com.kumar.crackup.templates.SubHeaderText
 import com.kumar.crackup.ui.theme.BaseAppTheme
@@ -158,7 +157,8 @@ fun ProfileContent(navHostController: NavHostController, user: UserModel?, onLog
                 ProfileStatsCard(
                     stats = stats, modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 10.dp)
+                        .padding(vertical = 10.dp),
+                    navHostController
                 )
 
                 Spacer(
@@ -224,46 +224,47 @@ fun ProfileContent(navHostController: NavHostController, user: UserModel?, onLog
 
                         }
 
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 10.dp, vertical = 5.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .size(emojiBoxSize)
-                                    .background(
-                                        color = lightBlue.copy(alpha = 0.3f),
-                                        shape = RoundedCornerShape(10.dp)
-                                    ),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                BodyText(
-                                    text = "💳", modifier = Modifier, textColor = Color.Gray,
-                                    textSize = bodyFontLargeSize
-                                )
-                            }
-                            Column(
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .padding(horizontal = 10.dp)
-                            ) {
-                                SubHeaderText(text = "Subscription", modifier = Modifier)
-                                BodyText(
-                                    text = "Free plan", modifier = Modifier, textColor = Color.Gray,
-                                    textSize = bodyFontTinySize
-                                )
-
-                            }
-                            GradientButton(
-                                onButtonClick = { navHostController.navigate("subscription") },
-                                buttonText = "Upgrade",
-                                textColor = Color.White,
-                                gradientColors = linearGradient1e,
-                                modifier = Modifier.weight(1f)
-                            )
-                        }
+                        //needs to be hidden for now
+//                        Row(
+//                            modifier = Modifier
+//                                .fillMaxWidth()
+//                                .padding(horizontal = 10.dp, vertical = 5.dp),
+//                            verticalAlignment = Alignment.CenterVertically
+//                        ) {
+//                            Box(
+//                                modifier = Modifier
+//                                    .size(emojiBoxSize)
+//                                    .background(
+//                                        color = lightBlue.copy(alpha = 0.3f),
+//                                        shape = RoundedCornerShape(10.dp)
+//                                    ),
+//                                contentAlignment = Alignment.Center
+//                            ) {
+//                                BodyText(
+//                                    text = "💳", modifier = Modifier, textColor = Color.Gray,
+//                                    textSize = bodyFontLargeSize
+//                                )
+//                            }
+//                            Column(
+//                                modifier = Modifier
+//                                    .weight(1f)
+//                                    .padding(horizontal = 10.dp)
+//                            ) {
+//                                SubHeaderText(text = "Subscription", modifier = Modifier)
+//                                BodyText(
+//                                    text = "Free plan", modifier = Modifier, textColor = Color.Gray,
+//                                    textSize = bodyFontTinySize
+//                                )
+//
+//                            }
+//                            GradientButton(
+//                                onButtonClick = { navHostController.navigate("subscription") },
+//                                buttonText = "Upgrade",
+//                                textColor = Color.White,
+//                                gradientColors = linearGradient1e,
+//                                modifier = Modifier.weight(1f)
+//                            )
+//                        }
 
                     }
                 }

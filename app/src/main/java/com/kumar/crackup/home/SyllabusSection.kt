@@ -75,20 +75,21 @@ fun SyllabusSection(navHostController: NavHostController, viewModel: MyViewModel
                 }
             }
 
-            Card(modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 10.dp), colors = CardDefaults.cardColors(containerColor = Color.White),
-                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 10.dp, vertical = 20.dp)
-                ) {
-                    HeaderText(text = "🏆 MOCK TESTS (⭐ Premium)", modifier = Modifier)
-                }
-            }
-
-            FreeTestGuidanceCard()
+            //needs to be removed for initial release
+//            Card(modifier = Modifier
+//                .fillMaxWidth()
+//                .padding(vertical = 10.dp), colors = CardDefaults.cardColors(containerColor = Color.White),
+//                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)) {
+//                Row(
+//                    modifier = Modifier
+//                        .fillMaxWidth()
+//                        .padding(horizontal = 10.dp, vertical = 20.dp)
+//                ) {
+//                    HeaderText(text = "🏆 MOCK TESTS (⭐ Premium)", modifier = Modifier)
+//                }
+//            }
+//
+//            FreeTestGuidanceCard()
         }
     }
 }

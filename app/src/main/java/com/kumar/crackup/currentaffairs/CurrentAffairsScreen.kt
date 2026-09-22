@@ -91,6 +91,7 @@ fun CurrentAffairsScreen(navHostController: NavHostController, myViewModel: MyVi
 //    ComingSoonView()
 //    Box(modifier = Modifier.fillMaxSize().background(screenBackground)) { }
     CurrentAffairsScreen(
+        navHostController,
         briefsByDate = mapOf(
             LocalDate.now() to DailyBrief(
                 date = LocalDate.now(),
@@ -112,6 +113,7 @@ enum class DownloadScope(val label: String) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CurrentAffairsScreen(
+    navHostController: NavHostController,
     briefsByDate: Map<LocalDate, DailyBrief>,
     initialDate: LocalDate = LocalDate.now(),
     modifier: Modifier = Modifier,
@@ -168,6 +170,7 @@ fun CurrentAffairsScreen(
         )
 
         LazyColumnBody(
+            navHostController,
             selectedDate = selectedDate,
             brief = briefsByDate[selectedDate],
             pdfItems = pdfItems,
@@ -223,6 +226,7 @@ fun CurrentAffairsScreen(
 
 @Composable
 private fun LazyColumnBody(
+    navHostController: NavHostController,
     selectedDate: LocalDate,
     brief: DailyBrief?,
     pdfItems: List<CurrentAffairsPDFItem>,
@@ -231,11 +235,12 @@ private fun LazyColumnBody(
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(16.dp),
+        contentPadding = PaddingValues(vertical = 16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        item { SummaryCard(selectedDate, brief, onDownloadClick = onDownloadSummaryClick) }
-        item { QuickActionsGrid() }
+//        item { SummaryCard(selectedDate, brief, onDownloadClick = onDownloadSummaryClick) }
+        item { NewsAffairsList(navHostController, selectedDate) }
+//        item { QuickActionsGrid() }
         item { RecentPdfsHeader() }
         items(pdfItems) { item ->
             PdfRow(item = item, onClick = { onDownloadClick(item) })
@@ -317,18 +322,18 @@ private fun DateChip(
             .padding(vertical = 8.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Text(
-            topLabel,
+        BodyText(
+            text = topLabel,
             fontWeight = FontWeight.Bold,
-            style = MaterialTheme.typography.titleMedium,
-            color = if (selected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface,
+            textSize = bodyFontSmallSize,
+            textColor = if (selected) textBlack else Color.White,
         )
         if (bottomLabel.isNotEmpty()) {
-            Text(
-                bottomLabel,
-                style = MaterialTheme.typography.labelSmall,
-                color = if (selected) MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.85f)
-                else MaterialTheme.colorScheme.onSurfaceVariant,
+            BodyText(
+                text = bottomLabel,
+                textSize = bodyFontTinySize,
+                textColor = if (selected) Color.Gray
+                else Color.LightGray,
             )
         }
     }
@@ -563,7 +568,7 @@ private fun QuickActionsGrid() {
 @Composable
 private fun RecentPdfsHeader() {
     Row(
-        Modifier.fillMaxWidth(),
+        Modifier.fillMaxWidth().padding(horizontal = 16.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -593,7 +598,7 @@ private fun PdfRow(item: CurrentAffairsPDFItem, onClick: () -> Unit) {
     Card(
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
     ) {
         Row(
             Modifier
