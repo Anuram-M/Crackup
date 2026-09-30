@@ -499,7 +499,7 @@ fun MainCompose(myViewModel: MyViewModel = hiltViewModel()) {
                 composable("faq") { FaqComposable() }
                 composable("contact") { ContactComposable() }
                 composable("practice") { PracticeIntroComposable(navController, myViewModel) }
-                composable("progress") { ProgressComposable(navHostController = navController) }
+                composable("progress") { ProgressComposable(navHostController = navController, myViewModel) }
                 composable("test") { Test(navController, myViewModel) }
                 composable("EXAM_YEAR") { ExamsComposable(navController, myViewModel) }
                 composable("Years") { YearsComposable(navController, myViewModel) }

@@ -12,6 +12,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -31,6 +32,10 @@ fun SyllabusSection(navHostController: NavHostController, viewModel: MyViewModel
 
     val topics by viewModel.topic.collectAsStateWithLifecycle()
     val isEnglish by viewModel.isEng.collectAsStateWithLifecycle()
+    val scrollState =  rememberScrollState()
+    LaunchedEffect(Unit) {
+        scrollState.scrollTo(0)
+    }
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -39,7 +44,7 @@ fun SyllabusSection(navHostController: NavHostController, viewModel: MyViewModel
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .verticalScroll(rememberScrollState())
+                .verticalScroll(scrollState)
         ) {
             HeaderText(text = "TNPSC Syllabus & Practice", modifier = Modifier)
             Card(modifier = Modifier

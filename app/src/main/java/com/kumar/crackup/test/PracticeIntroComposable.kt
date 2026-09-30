@@ -63,11 +63,13 @@ data class PracticeItem(
     val name: String,
     val subText: String
 )
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PracticeIntroComposable(navHostController: NavHostController, myViewModel: MyViewModel) {
     val practiceTopic by myViewModel.query.collectAsState()
     val textVersions = listOf("pyq")
+    val query by myViewModel.query.collectAsStateWithLifecycle()
     val contents = listOf(
         "🎯 Topic-wise Smart Practice",
         "📊 Live Performance Analytics",
@@ -103,51 +105,82 @@ fun PracticeIntroComposable(navHostController: NavHostController, myViewModel: M
 
     val coroutineScope = rememberCoroutineScope()
     val isEngSelected by myViewModel.isEng.collectAsStateWithLifecycle()
-    Box(modifier = Modifier
-        .fillMaxSize()
-        .padding(20.dp), contentAlignment = Alignment.BottomCenter) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(20.dp), contentAlignment = Alignment.BottomCenter
+    ) {
 //        Image(painter = painterResource(R.drawable.background), modifier = Modifier.fillMaxSize(), contentScale = ContentScale.FillHeight, contentDescription = null)
         Column(modifier = Modifier.fillMaxSize()) {
-            Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
                 HeaderText(text = "Start your practice", modifier = Modifier)
                 IconButton(
                     onClick = {
-                       showSheet = true
+                        showSheet = true
                     }
                 ) {
-                    Icon(imageVector = Icons.Outlined.Info, contentDescription = null, tint = lightBlue)
+                    Icon(
+                        imageVector = Icons.Outlined.Info,
+                        contentDescription = null,
+                        tint = lightBlue
+                    )
                 }
             }
 
-            if (!textVersions.contains(practiceTopic.mainTopic))
-                Column() {
-                    BodyText(
-                        text = "Choose your practice type and begin",
-                        modifier = Modifier
-                    )
-                    practiceItems.forEach { item ->
-                        PracticeSelectorCard(item, selectedItemId == item.id) {
-                            selectedItemId = item.id
-                        }
-                    }
-                }
+//            if (!textVersions.contains(practiceTopic.mainTopic))
+//                Column() {
+//                    BodyText(
+//                        text = "Choose your practice type and begin",
+//                        modifier = Modifier
+//                    )
+//                    practiceItems.forEach { item ->
+//                        PracticeSelectorCard(item, selectedItemId == item.id) {
+//                            selectedItemId = item.id
+//                        }
+//                    }
+//                }
 
             HeightSpacer()
-            BodyText(text = "Language", textSize = bodyFontSize, textColor = textBlack, fontWeight = FontWeight.SemiBold)
-            SmallHeightSpacer()
-            Selector(
-                options = listOf(
-                    "English",
-                    "தமிழ்"
-                ),
-                default = if (isEngSelected) "English" else "தமிழ்",
-                modifier = Modifier.fillMaxWidth(),
-                onOptionSelected = {
-                    myViewModel.changeLanguage(it.equals("English"))
-                },
+
+            AnimatedVisibility(
+                visible = !query.mainTopic.equals("tamil")
+            ) {
+                Column(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    BodyText(
+                        text = "Language",
+                        textSize = bodyFontSize,
+                        textColor = textBlack,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                    SmallHeightSpacer()
+                    Selector(
+                        options = listOf(
+                            "English",
+                            "தமிழ்"
+                        ),
+                        default = if (isEngSelected) "English" else "தமிழ்",
+                        modifier = Modifier.fillMaxWidth(),
+                        onOptionSelected = {
+                            myViewModel.changeLanguage(it.equals("English"))
+                        },
+                    )
+                    HeightSpacer()
+                }
+
+            }
+
+
+            ExpandableCard(
+                headingText = "📌 Exam Instructions",
+                AppContentUtil.examInstructions,
+                isEngSelected
             )
-            HeightSpacer()
-            ExpandableCard(headingText = "📌 Exam Instructions", AppContentUtil.examInstructions, isEngSelected)
         }
 
         ColoredButton(
@@ -157,11 +190,12 @@ fun PracticeIntroComposable(navHostController: NavHostController, myViewModel: M
             textColor = Color.White,
             modifier = Modifier
                 .fillMaxWidth()
-                .align(Alignment.BottomCenter)) {
+                .align(Alignment.BottomCenter)
+        ) {
             navHostController.navigate("test")
         }
 
-        if(showSheet) {
+        if (showSheet) {
             BottomSheet(sheetState = sheetState, onClose = {
                 coroutineScope.launch {
                     sheetState.hide()
@@ -268,14 +302,15 @@ fun ExpandableCard(
                         textColor = lightBlue,
                         textSize = bodyFontSize,
 
-                    )
+                        )
 
                     Image(
                         painter = painterResource(R.drawable.arrow),
                         contentDescription = null,
                         modifier = Modifier
-                            .size(24.dp).padding(4.dp)
-                            .rotate( if(expanded) 90.0f else -90f)
+                            .size(24.dp)
+                            .padding(4.dp)
+                            .rotate(if (expanded) 90.0f else -90f)
                     )
                 }
 

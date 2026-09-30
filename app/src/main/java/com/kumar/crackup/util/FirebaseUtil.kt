@@ -9,15 +9,21 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.SetOptions
 import com.kumar.crackup.UserModel
 import com.kumar.crackup.auth.CreateAccountFormInput
 import com.kumar.crackup.model.Exam
 import com.kumar.crackup.model.NewQuestion
+import com.kumar.crackup.model.NewTopicProgress
 import com.kumar.crackup.model.QueryModel
 import com.kumar.crackup.model.Question
+import com.kumar.crackup.model.SafeNewQuestion
 import com.kumar.crackup.model.SubTopic
 import com.kumar.crackup.model.TamilUnit
 import com.kumar.crackup.model.Topic
+import com.kumar.crackup.progress.MonthlyActivityModel
+import com.kumar.crackup.progress.StreakCalculator
+import com.kumar.crackup.test.AttemptModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -112,6 +118,11 @@ object FirebaseUtil {
 
     fun getAuthFlow(): Flow<FirebaseUser?> = callbackFlow {
         val auth = FirebaseAuth.getInstance()
+        if(auth.currentUser == null) {
+            trySend(null)
+            close()
+            return@callbackFlow
+        }
         val listener = FirebaseAuth.AuthStateListener{firebaseAuth ->
             trySend(firebaseAuth.currentUser)
         }
@@ -156,6 +167,10 @@ object FirebaseUtil {
                                     generalStudies = item.getBoolean("generalStudies"),
                                     aptitude = item.getBoolean("aptitude"),
                                     fullPackage = item.getBoolean("fullPackage"),
+                                    currentStreak  = item.getLong("currentStreak")?.toInt() ?: 0,
+                                    longestStreak = item.getLong("longestStreak")?.toInt() ?: 0,
+                                    lastStreakDate = item.get("lastStreakDate").toString(),
+                                    activeDates = item.get("activeDates") as? List<String> ?: emptyList()
                                 )
                             }
                         trySend(user)
@@ -164,6 +179,195 @@ object FirebaseUtil {
             }
         }
 
+    }
+
+    suspend fun addAttempt(
+        attemptModel: AttemptModel,
+        parentName: String,
+        totalQuestions: Int,
+        globalTotalQuestions: Int
+    ) {
+        val firestore = FirebaseFirestore.getInstance()
+        val userId = FirebaseAuth.getInstance().currentUser?.uid
+
+        if (userId == null) {
+            Log.d("ERROR", "addAttempt: User not logged in")
+            return
+        }
+
+        try {
+            // References
+            val todayDateStr = StreakCalculator.getTodayDate()
+            val monthYear = StreakCalculator.getMonthYear()
+            val attemptRef = firestore.collection("users/$userId/testAttempts").document()
+            val userRef = firestore.collection("users").document(userId)
+            val parentDocId = attemptModel.setCategory.replace("/", "_") // e.g., "pyq"
+            val parentRef = firestore.collection("users/$userId/topicProgress").document(parentDocId)
+            val globalRef = firestore.collection("users/$userId/topicProgress").document("global")
+            val activityRef = firestore.collection("users/${userId}/dailyActivity").document(todayDateStr)
+            val monthlyActivityRef = firestore.collection("users/${userId}/monthlyActivity").document(monthYear)
+            firestore.runTransaction { transaction ->
+
+                // ==========================================
+                // STEP 1: ALL READS FIRST
+                // ==========================================
+                val parentSnapshot = transaction.get(parentRef) //to parent progress
+                val globalSnapshot = transaction.get(globalRef) //for global progress
+                val userSnapshot = transaction.get(userRef)
+
+
+                // getting streak
+                val lastStreakDate = userSnapshot.getString("lastStreakDate")
+                val currentStreak = userSnapshot.getLong("currentStreak")?.toInt() ?: 0
+                val longestStreak = userSnapshot.getLong("longestStreak")?.toInt() ?: 0
+
+                val (newStreak, newLongestStreak, currentDate) = StreakCalculator.calcualteStreak(
+                    currentStreak,
+                    longestStreak,
+                    lastStreakDate
+                )
+
+                val existingActiveDates = (userSnapshot.get("activeDates") as? List<String>)?.toMutableList() ?: mutableListOf()
+
+                if(!existingActiveDates.contains(todayDateStr)) {
+                    existingActiveDates.add(0, todayDateStr)
+                    if (existingActiveDates.size > 7) {
+                        existingActiveDates.removeAt(existingActiveDates.lastIndex)
+                    }
+                }
+
+                val streakMap = mapOf(
+                    "currentStreak" to newStreak,
+                    "longestStreak" to newLongestStreak,
+                    "lastStreakDate" to currentDate,
+                    "activeDates" to existingActiveDates.toList()
+                )
+
+                val monthlyActivityMap = mapOf(
+                    "month" to monthYear,
+                    "activeDates" to FieldValue.arrayUnion(todayDateStr),
+                    "totalTests" to FieldValue.increment(1)
+                )
+
+                // Extract existing cumulative progress values for parent topic
+                val prevAttempts = parentSnapshot.getLong("attemptsCount")?.toInt() ?: 0
+                val prevAttempted = parentSnapshot.getLong("totalQuestionsAttempted")?.toInt() ?: 0
+                val prevCorrect = parentSnapshot.getLong("totalCorrectAnswers")?.toInt() ?: 0
+                val prevDone = parentSnapshot.getLong("questionsDone")?.toInt() ?: 0
+
+                // Extract existing cumulative progress for global progress
+                val globalPrevAttempts = globalSnapshot.getLong("attemptsCount")?.toInt() ?: 0
+                val globalPrevAttempted = globalSnapshot.getLong("totalQuestionsAttempted")?.toInt() ?: 0
+                val globalPrevCorrect = globalSnapshot.getLong("totalCorrectAnswers")?.toInt() ?: 0
+
+                // Get existing solved composite IDs (e.g., ["pyq2019q1", "pyq2019q2"])
+                @Suppress("UNCHECKED_CAST")
+                val existingParentSolvedIds = (parentSnapshot.get("solvedQuestionIds") as? List<String>)?.toSet() ?: emptySet()
+
+                // existing solved ids of global progress
+                @Suppress("UNCHECKED_CAST")
+                val existingGlobalSolvedIds = (globalSnapshot.get("solvedQuestionIds") as? List<String>)?.toSet() ?: emptySet()
+
+
+                // ==========================================
+                // STEP 2: CALCULATIONS
+                // ==========================================
+
+                //getting unique solved id of parent progress
+                val newSolvedIds = attemptModel.solvedQuestionsIds.toSet()
+                val allUniqueSolvedIds = newSolvedIds + existingParentSolvedIds
+
+                //getting total uniques solved ids for global progress
+                val allGlobalUniqueSolvedIds = newSolvedIds + existingGlobalSolvedIds
+
+                // attempts count calculation for parent topic
+                val questionsDone = allUniqueSolvedIds.size.coerceAtMost(totalQuestions)
+                val newAttempts = prevAttempts + 1
+                val newAttempted = prevAttempted + attemptModel.attemptedCount
+                val newCorrect = prevCorrect + attemptModel.correctCount
+
+
+                //attempts count calculation for global topic progress
+                val globalQuestionsDone = allGlobalUniqueSolvedIds.size.coerceAtMost(globalTotalQuestions)
+                val newGlobalAttempts = globalPrevAttempts + 1
+                val newGlobalAttempted = globalPrevAttempted + attemptModel.attemptedCount
+                val newGlobalCorrect = globalPrevCorrect + attemptModel.correctCount
+
+                // Accuracy % = (total correct / total attempted) * 100 for parent topic
+                val newAccuracy = if (newAttempted > 0) {
+                    (newCorrect.toFloat() / newAttempted.toFloat()) * 100f
+                } else 0f
+
+
+                // Accuracy percent for global topic
+                val newGlobalAccuracy = if(newGlobalAttempted > 0) {
+                    ((newGlobalCorrect.toFloat())/ newGlobalAttempted.toFloat()) * 100f
+                } else 0f
+
+
+                // Progress % = (questions done / total questions) * 100
+                val newCompletionPercent = if (totalQuestions > 0) {
+                    (questionsDone.toFloat() / totalQuestions.toFloat()) * 100f
+                } else 0f
+
+                // Global progress percentage
+                val newGlobalCompletionPercent = if(globalTotalQuestions > 0) {
+                    (globalQuestionsDone.toFloat() / globalTotalQuestions.toFloat()) * 100f
+                } else 0f
+
+                val updatedProgress = mapOf(
+                    "progressId" to parentDocId,
+                    "parentName" to parentName,
+                    "path" to parentName,
+                    "attemptsCount" to newAttempts,
+                    "totalQuestionsAttempted" to newAttempted,
+                    "totalCorrectAnswers" to newCorrect,
+                    "accuracyPercent" to newAccuracy,
+                    "questionsDone" to questionsDone,
+                    "questionsTotal" to totalQuestions,
+                    "completedPercent" to newCompletionPercent,
+                    "solvedQuestionIds" to allUniqueSolvedIds.toList()
+                )
+
+                val updatedGlobalProgress = mapOf(
+                    "progressId" to "global",
+                    "parentName" to "Overall Summary",
+                    "path" to "global",
+                    "attemptsCount" to newGlobalAttempts,
+                    "totalQuestionsAttempted" to newGlobalAttempted,
+                    "totalCorrectAnswers" to newGlobalCorrect,
+                    "accuracyPercent" to newGlobalAccuracy,
+                    "questionsDone" to globalQuestionsDone,
+                    "questionsTotal" to globalTotalQuestions,
+                    "completedPercent" to newGlobalCompletionPercent,
+                    "solvedQuestionIds" to allGlobalUniqueSolvedIds.toList()
+                )
+
+                // ==========================================
+                // STEP 3: ALL WRITES AFTER ALL READS
+                // ==========================================
+
+
+                // Write 1: Create the attempt history log
+                transaction.set(attemptRef, attemptModel)
+
+                // Write 2: Update the parent topic progress document
+                transaction.set(parentRef, updatedProgress, SetOptions.merge())
+
+                // Write 3: Update the global topic progress document
+                transaction.set(globalRef, updatedGlobalProgress, SetOptions.merge())
+
+                // Write 4: Update the streak data
+                transaction.set(userRef, streakMap, SetOptions.merge())
+
+                // Write 5: Update monthly activity doc
+                transaction.set(monthlyActivityRef, monthlyActivityMap, SetOptions.merge())
+
+            }.await()
+
+        } catch (e: Exception) {
+            Log.d("ERROR", "addAttempt failed: ${e.message}", e)
+        }
     }
 
     fun putTopics(topicModel: Topic) {
@@ -210,6 +414,89 @@ object FirebaseUtil {
         }
         return emptyList()
     }
+
+    fun getTopicProgress(): Flow<List<NewTopicProgress>> = callbackFlow{
+        val firestore = FirebaseFirestore.getInstance()
+        val userId = FirebaseAuth.getInstance().currentUser?.uid
+
+        if(userId == null) {
+            trySend(emptyList())
+            close()
+            return@callbackFlow
+        }
+        val listener = firestore.collection("users/${userId}/topicProgress")
+            .addSnapshotListener { snapshots, exception ->
+                if(exception != null) {
+                    close(exception)
+                    return@addSnapshotListener
+                }
+
+                if(snapshots == null) {
+                    trySend(emptyList())
+                } else {
+                    val data = snapshots.documents.mapNotNull {
+                        it.toObject(NewTopicProgress::class.java)
+                    }
+                    trySend(data)
+                }
+            }
+        awaitClose { listener.remove() }
+    }
+
+    fun getGlobalProgress(): Flow<NewTopicProgress?> = callbackFlow{
+        val firestore = FirebaseFirestore.getInstance()
+        val userId = FirebaseAuth.getInstance().currentUser?.uid
+        if(userId == null) {
+            trySend(null)
+            close()
+            return@callbackFlow
+        }
+        val listener = firestore.collection("users/${userId}/topicProgress")
+            .document("global")
+            .addSnapshotListener { snapshot, exception ->
+                if(exception != null) {
+                    close(exception)
+                    return@addSnapshotListener
+                }
+
+                val docs = snapshot?.toObject(NewTopicProgress::class.java)
+                   trySend(docs)
+            }
+
+        awaitClose { listener.remove() }
+
+    }
+
+    fun getMonthlyActivity(): Flow<List<MonthlyActivityModel>> = callbackFlow {
+        val user = FirebaseAuth.getInstance().currentUser?.uid
+        if (user == null) {
+            trySend(emptyList())
+            close()
+            return@callbackFlow
+        }
+
+        val firestore = FirebaseFirestore.getInstance()
+        val listener = firestore.collection("users/$user/monthlyActivity")
+            .addSnapshotListener { snapshots, exception ->
+                if (exception != null) {
+                    close(exception)
+                    return@addSnapshotListener
+                }
+
+                if (snapshots != null) {
+                    val docs = snapshots.documents.mapNotNull { doc ->
+                        val model = doc.toObject(MonthlyActivityModel::class.java)
+                        // Set yearMonth using the Document ID ("Sep, 2026")
+                        model?.copy(month = doc.id)
+                    }
+                    trySend(docs)
+                } else {
+                    trySend(emptyList())
+                }
+            }
+        awaitClose { listener.remove() }
+    }
+
     suspend fun getTamil(): List<TamilUnit> {
         val firestore = FirebaseFirestore.getInstance()
         try {
@@ -388,8 +675,8 @@ object FirebaseUtil {
             explanation = doc.safeString("explanation") ?: "",
             explanationTamil = doc.safeString("explanation_ta") ?: "",
             qno = doc.safeInt("number") ?: 0,
-            options = doc.safeStringList("options_en"),
-            optionsTamil = doc.safeStringList("options_ta"),
+//            options = doc.safeStringList("options_en"),
+//            optionsTamil = doc.safeStringList("options_ta"),
             question = doc.safeString("q_en") ?: "",
             questionTamil = doc.safeString("q_ta") ?: "",
             mainTopic = if((doc.safeString("id") ?: "").startsWith("Previous Year Questions")) "pyq"
@@ -417,8 +704,21 @@ object FirebaseUtil {
 
     private fun DocumentSnapshot.safeStringList(field: String): List<String> =
         try {
-            (get(field) as? List<*>)?.mapNotNull { it as? String } ?: emptyList()
-        } catch (e: Exception) { emptyList() }
+            when (val value = get(field)) {
+                // 1. Standard List: maps all non-null items to String (Int, Double, Boolean, String, etc.)
+                is List<*> -> value.mapNotNull { item ->
+                    when (item) {
+                        is Double -> if (item % 1.0 == 0.0) item.toLong().toString() else item.toString()
+                        else -> item?.toString()
+                    }
+                }
+                // 2. Fallback if a single primitive/String was saved directly instead of a List
+                is Any -> listOf(value.toString())
+                else -> emptyList()
+            }
+        } catch (e: Exception) {
+            emptyList()
+        }
 
     private fun DocumentSnapshot.safeTimestamp(field: String): Timestamp =
         try { getTimestamp(field) ?: Timestamp(0, 0) } catch (e: Exception) { Timestamp(0, 0) }
@@ -565,8 +865,8 @@ object FirebaseUtil {
             explanation = optString("explanation", ""),
             explanationTamil = optString("explanation_ta", ""),
             qno = optInt("number", 0),
-            options = optStringList("options_en"),
-            optionsTamil = optStringList("options_ta"),
+//            options = optStringList("options_en"),
+//            optionsTamil = optStringList("options_ta"),
             question = optString("q_en", ""),
             questionTamil = optString("q_ta", ""),
             mainTopic = if(optString("id", "").startsWith("Previous Year Questions")) "pyq"

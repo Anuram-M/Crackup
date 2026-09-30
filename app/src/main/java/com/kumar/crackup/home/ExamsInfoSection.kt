@@ -4,7 +4,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.kumar.crackup.model.ExamItem
@@ -16,6 +19,10 @@ import com.kumar.crackup.templates.HeaderText
 @Composable
 fun ExamsInfoSection() {
 
+    val scrollState =  rememberScrollState()
+    LaunchedEffect(Unit) {
+        scrollState.scrollTo(0)
+    }
     val exams = listOf(
         ExamItem(
             title = "UPSC - Union Public Service Commission",
@@ -118,6 +125,7 @@ fun ExamsInfoSection() {
         modifier = Modifier
             .fillMaxWidth()
             .padding(10.dp)
+            .verticalScroll(scrollState)
     ) {
         Column() {
             HeaderText(text = "India's Major Competitive Exam Gateways", modifier = Modifier

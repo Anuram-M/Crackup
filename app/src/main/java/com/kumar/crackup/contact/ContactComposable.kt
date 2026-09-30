@@ -55,14 +55,14 @@ fun goTo(context: Context, option: Int) {
     when(option) {
         1 -> {try {
             val intent = Intent(Intent.ACTION_DIAL).apply {
-                data = Uri.parse("tel:9876543210")
+                data = Uri.parse("tel:9361776015")
             }
             context.startActivity(intent)
         }catch (e: Exception) {
 
         }}
         2 -> {try {
-            val link = "https://api.whatsapp.com/send?phone=9876543210"
+            val link = "https://api.whatsapp.com/send?phone=9361776015"
             val intent = Intent(Intent.ACTION_VIEW).apply {
                 data = Uri.parse(link)
             }
@@ -72,7 +72,7 @@ fun goTo(context: Context, option: Int) {
         }}
         3 -> {try {
             val intent = Intent(Intent.ACTION_SENDTO).apply {
-                data = Uri.parse("mailto:")
+                data = Uri.parse("mailto:support@crackupacademy.in")
             }
             context.startActivity(intent)
         }catch (e: Exception) {

@@ -3,6 +3,7 @@ package com.kumar.crackup.test
 //import com.kumar.crackup.components.KMathText
 import android.util.Log
 import android.widget.Toast
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -71,6 +72,7 @@ import com.kumar.crackup.templates.SelectorTextRadioButton
 import com.kumar.crackup.templates.SmallHeightSpacer
 import com.kumar.crackup.templates.SmallWidthSpacer
 import com.kumar.crackup.templates.TinyWidthSpacer
+import com.kumar.crackup.ui.theme.bodyFont
 import com.kumar.crackup.ui.theme.bodyFontLargeSize
 import com.kumar.crackup.ui.theme.bodyFontSmallSize
 import com.kumar.crackup.ui.theme.bodyFontTinySize
@@ -115,11 +117,22 @@ fun TestComposable(
     var currentIndex by remember { mutableIntStateOf(0) }
     var result by remember { mutableStateOf<QuizResult?>(null) }
     val context = LocalContext.current.applicationContext
+    val query by viewModel.query.collectAsStateWithLifecycle()
     val submittedResult = result
     var seeResult by remember { mutableStateOf(false) }
+    val scrollState = rememberScrollState()
+    LaunchedEffect(currentIndex) {
+        scrollState.scrollTo(0)
+    }
     if (submittedResult != null) {
         QuizResultScreen(
             result = submittedResult,
+            submitAttempt = { attempt ->
+                var model = attempt
+                model = model.copy(setCategory = query.subTopic, solvedQuestionsIds = submittedResult.attemptedQuestiondIds)
+                Log.d("ERROR", "TestComposable: ${model}, total ${viewModel.globalTotal.value}")
+                viewModel.addAttempt(model, query.parentName, query.totalQuestions, viewModel.globalTotal.value)
+            },
             onExit = onExit,
             onReview = {
                 currentIndex = 0
@@ -128,6 +141,7 @@ fun TestComposable(
         )
     } else {
         QuizScreen(
+            scrollState = scrollState,
             myViewModel = viewModel,
             showAnswer = seeResult,
             isEnglish = isEnglish,
@@ -200,6 +214,7 @@ fun currentTopic(current: String) : ServiceModel {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun QuizScreen(
+    scrollState: ScrollState,
     myViewModel: MyViewModel,
     showAnswer: Boolean,
     isEnglish: Boolean,
@@ -210,7 +225,7 @@ private fun QuizScreen(
     onPremiumClick: () -> Unit,
     onSelectOption: (questionIndex: Int, optionIndex: Int) -> Unit,
     onToggleMarkFinal: (questionIndex: Int) -> Unit,
-    onSubmit: () -> Unit,
+    onSubmit: (Boolean) -> Unit,
     onResetOption: (questionIndex: Int) -> Unit
 ) {
     val question = questions[currentIndex]
@@ -254,7 +269,7 @@ private fun QuizScreen(
             TimerComponent(
                 totalSeconds = 10800,
             ) {
-                onSubmit()
+                onSubmit(false)
             }
 
 
@@ -269,7 +284,7 @@ private fun QuizScreen(
                 Button(
                     enabled = answeredCount > 0,
                     colors = ButtonDefaults.buttonColors(containerColor = lightBlue, disabledContainerColor = Color.Gray),
-                    onClick = { onSubmit() },
+                    onClick = { onSubmit(true) },
                     modifier = Modifier
                 ) {
                     Text("Submit", color = Color.White)
@@ -356,8 +371,9 @@ private fun QuizScreen(
             modifier = Modifier
                 .weight(1f)
                 .padding(start = 20.dp, end = 20.dp, bottom = 20.dp, top = 10.dp)
-                .verticalScroll(rememberScrollState())
+                .verticalScroll(scrollState)
         ) {
+            Log.d("PASSECDATAB", "QuizScreen: ${question}")
 
             val questionText = convertText(question, isEnglish)
 //            KMathText(text = question.question, textColor = textBlack)
@@ -414,6 +430,7 @@ private fun QuizScreen(
             OutlineContainer(isEnabled = !isFirst,
                 contentColor = lightBlue,
                 backgroundColor = screenBackground,
+                modifier = Modifier.padding(top = 4.dp),
                 onclicK = {
                 if (!isFirst) onIndexChange(currentIndex - 1)
             }) {
@@ -429,6 +446,7 @@ private fun QuizScreen(
                 isEnabled = state.selectedOptionIndex != null,
                 contentColor = lightBlue,
                 backgroundColor = screenBackground,
+                modifier = Modifier.padding(top = 4.dp),
                 onclicK = {
                     onResetOption(currentIndex)
                 }) {
@@ -439,19 +457,34 @@ private fun QuizScreen(
                 )
             }
 
-            OutlineContainer(
-                isEnabled = true,
-                contentColor = lightBlue,
-                backgroundColor = lightBlue,
-                onclicK = {
+            Button(
+                modifier = Modifier.padding(bottom = 10.dp),
+                enabled = currentIndex < 9,
+                colors = ButtonDefaults.buttonColors(containerColor = lightBlue, disabledContainerColor = Color.Gray),
+                onClick = {
                     if (!isLast && currentIndex < 9) onIndexChange(currentIndex + 1) else showPaySheet = true
-                }) {
-                BodyText(
-                    modifier = Modifier.padding(horizontal = 15.dp, vertical = 10.dp),
-                    text = "Next >",
-                    textColor = Color.White,
-                )
+                }
+            ) {
+                Text("Next >", color = Color.White, fontFamily = bodyFont)
+//                BodyText(
+//                    modifier = Modifier.padding(horizontal = 15.dp, vertical = 10.dp),
+//                    text = "Next >",
+//                    textColor = Color.White,
+//                )
             }
+//            OutlineContainer(
+//                isEnabled = currentIndex < 9,
+//                contentColor = lightBlue,
+//                backgroundColor = lightBlue,
+//                onclicK = {
+//                    if (!isLast && currentIndex < 9) onIndexChange(currentIndex + 1) else showPaySheet = true
+//                }) {
+//                BodyText(
+//                    modifier = Modifier.padding(horizontal = 15.dp, vertical = 10.dp),
+//                    text = "Next >",
+//                    textColor = Color.White,
+//                )
+//            }
         }
     }
     if(showSheet) {
@@ -612,7 +645,7 @@ private fun OptionRow(
             .clip(RoundedCornerShape(14.dp))
             .border(1.5.dp, borderColor, RoundedCornerShape(14.dp))
             .background(backgroundColor)
-            .clickable { if(!showAnswer) onClick() }
+            .clickable { if (!showAnswer) onClick() }
             .padding(end = 10.dp)
     ) {
 //        RadioButton(selected = isSelected, onClick = onClick, colors = RadioButtonDefaults.colors(selectedColor = borderColor, unselectedColor = Color.Gray))
@@ -675,9 +708,21 @@ private fun QuestionPaletteChip(
 @Composable
 private fun QuizResultScreen(
     result: QuizResult,
+    submitAttempt: (AttemptModel) -> Unit,
     onExit: () -> Unit,
     onReview: () -> Unit
 ) {
+    LaunchedEffect(Unit) {
+        Log.d("ERROR", "QuizResultScreen: ${result}")
+        val attemptModel = AttemptModel(
+            attemptedCount = result.attempted,
+            correctCount = result.correct,
+            setCategory = "",
+            accuracy = (result.correct/result.attempted).toFloat()
+        )
+        Log.d("ERROR", "QuizResultScreen: ${attemptModel}")
+        submitAttempt(attemptModel)
+    }
     Column(
         modifier = Modifier
             .fillMaxSize()

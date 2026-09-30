@@ -1,6 +1,12 @@
 package com.kumar.crackup.model
 
+import com.google.firebase.firestore.Exclude
+import com.google.firebase.firestore.PropertyName
+import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.jsonPrimitive
+import javax.annotation.PropertyKey
 
 
 //docid = mainTopic + _ + subTopic + _ + subCollection
@@ -11,14 +17,29 @@ data class NewQuestion(
     val explanationTamil: String = "",
     val mainTopic: String = "pyq", //:"tamil" //general science
     val qno: Int = 0,
-    val options: List<String> = emptyList(),
-    val optionsTamil: List<String> = emptyList(),
+    @get:PropertyName("options")
+    @set:PropertyName("options")
+    var rawOptions: List<@Contextual Any>? = null,
+    @get:PropertyName("optionsTamil")
+    @set:PropertyName("optionsTamil")
+    var rawOptionsTamil: List<@Contextual Any>? = null,
     val question: String = "",
     val questionTamil: String = "",
     val subtopic: String = "exam_g1",
     val subCollection: String = "2019",
     val premium: Boolean = false,
-)
+) {
+    @get:Exclude
+    val options : List<String>
+        get() = rawOptions?.mapNotNull { it?.toString() } ?: emptyList()
+
+//        get() = rawOptions?.mapNotNull { it.jsonPrimitive.content } ?: emptyList()
+
+    @get:Exclude
+    val optionsTamil : List<String>
+        get() = rawOptionsTamil?.mapNotNull { it.toString() } ?: emptyList()
+//        get() = rawOptionsTamil?.mapNotNull { it.jsonPrimitive.content } ?: emptyList()
+}
 
 
 fun Question.toNewQuestion() : NewQuestion{
@@ -27,8 +48,8 @@ fun Question.toNewQuestion() : NewQuestion{
         explanation = this.explanation,
         explanationTamil = this.explanation_ta,
         qno = this.number,
-        options = this.options_en,
-        optionsTamil = this.options_ta,
+//        options = this.options_en,
+//        optionsTamil = this.options_ta,
         question = this.q_en,
         questionTamil = this.q_ta,
 

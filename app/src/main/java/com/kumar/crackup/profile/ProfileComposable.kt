@@ -18,6 +18,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -30,24 +31,23 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.kumar.crackup.UserModel
+import com.kumar.crackup.model.NewTopicProgress
 import com.kumar.crackup.model.StatItem
 import com.kumar.crackup.templates.BodyText
 import com.kumar.crackup.templates.ColoredButton
-import com.kumar.crackup.templates.GradientButton
 import com.kumar.crackup.templates.HeaderText
 import com.kumar.crackup.templates.Selector
 import com.kumar.crackup.templates.SubHeaderText
 import com.kumar.crackup.ui.theme.BaseAppTheme
 import com.kumar.crackup.ui.theme.bodyFontLargeSize
-import com.kumar.crackup.ui.theme.bodyFontTinySize
 import com.kumar.crackup.ui.theme.heroFont
 import com.kumar.crackup.ui.theme.heroFontLargeSize
 import com.kumar.crackup.ui.theme.lightBlue
 import com.kumar.crackup.ui.theme.lightPink
-import com.kumar.crackup.ui.theme.linearGradient1e
 import com.kumar.crackup.util.PrefConstants
 import com.kumar.crackup.util.PreferenceUtil
 import com.kumar.crackup.viewmodel.MyViewModel
+import java.util.Locale
 
 fun String.toInitials(): String {
     // Split by whitespace and ignore extra spaces
@@ -69,9 +69,18 @@ fun String.toInitials(): String {
 @Composable
 fun ProfileComposable(navHostController: NavHostController, myViewModel: MyViewModel) {
 
+
+    val topicProgress by myViewModel.topicProgress.collectAsStateWithLifecycle()
+    val globalProgress by myViewModel.globalProgress.collectAsStateWithLifecycle()
     val user by myViewModel.currentUser.collectAsStateWithLifecycle()
 
-    ProfileContent(navHostController, user, onLogout = {
+    LaunchedEffect(Unit) {
+//        if(topicProgress.isEmpty()) {
+//            myViewModel.getTopicProgress()
+//            myViewModel.getGlobalProgress()
+//        }
+    }
+    ProfileContent(navHostController, user, globalProgress, onLogout = {
         myViewModel.logout(onSuccess = {
             PreferenceUtil.putBoolean(PrefConstants.IS_LOGGED_IN, false)
             PreferenceUtil.putBoolean(PrefConstants.SHOW_CONTACT, false)
@@ -83,18 +92,26 @@ fun ProfileComposable(navHostController: NavHostController, myViewModel: MyViewM
 }
 
 @Composable
-fun ProfileContent(navHostController: NavHostController, user: UserModel?, onLogout: () -> Unit) {
+fun ProfileContent(
+    navHostController: NavHostController,
+    user: UserModel?,
+    globalProgress: NewTopicProgress?,
+    onLogout: () -> Unit
+) {
+    val testTaken = globalProgress?.attemptsCount ?: "-"
+    val accuracy = globalProgress?.accuracyPercent ?: 0f
+    val streak = user?.currentStreak ?: 0
     val stats = listOf(
         StatItem(
-            stat = "-",
+            stat = "${testTaken}",
             description = "Tests Taken"
         ),
         StatItem(
-            stat = "-",
+            stat = "${String.format(Locale.US, "%.1f", accuracy)}%",
             description = "Accuracy"
         ),
         StatItem(
-            stat = "-",
+            stat = "${streak}",
             description = "Streak"
         ),
 
@@ -155,7 +172,9 @@ fun ProfileContent(navHostController: NavHostController, user: UserModel?, onLog
                 )
 
                 ProfileStatsCard(
-                    stats = stats, modifier = Modifier
+                    stats = stats,
+                    takeTest = globalProgress == null,
+                    modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 10.dp),
                     navHostController

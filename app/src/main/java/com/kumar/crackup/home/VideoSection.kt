@@ -7,11 +7,14 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -39,10 +42,15 @@ fun VideoSection(lifecycleOwner: LifecycleOwner) {
     var showDialog by remember { mutableStateOf(false) }
     var dialogVideoId by remember { mutableStateOf("") }
     val context = LocalContext.current
+    val scrollState =  rememberScrollState()
+    LaunchedEffect(Unit) {
+        scrollState.scrollTo(0)
+    }
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 20.dp, vertical = 10.dp)
+            .verticalScroll(scrollState)
     ) {
         Column() {
             Card(
@@ -108,7 +116,7 @@ fun VideoSection(lifecycleOwner: LifecycleOwner) {
             )
 
             Card(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().padding(bottom = 10.dp),
                 colors = CardDefaults.cardColors(containerColor = Color.White),
                 elevation = CardDefaults.cardElevation(defaultElevation = 5.dp)
             ) {
@@ -176,6 +184,7 @@ fun VideoSection(lifecycleOwner: LifecycleOwner) {
                         buttonText = "View all YouTube Videos",
                         buttonColor = lightBlue,
                         textColor = Color.White,
+                        modifier = Modifier.fillMaxWidth()
                     ) {
                         YTNavigator(
                             context, "@CrackUpofficial"

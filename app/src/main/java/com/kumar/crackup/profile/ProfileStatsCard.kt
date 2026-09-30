@@ -28,7 +28,7 @@ import com.kumar.crackup.ui.theme.lightBlue
 import com.kumar.crackup.util.AppContentUtil
 
 @Composable
-fun ProfileStatsCard(stats: List<StatItem>, modifier: Modifier = Modifier, navHostController: NavHostController) {
+fun ProfileStatsCard(stats: List<StatItem>, takeTest: Boolean, modifier: Modifier = Modifier, navHostController: NavHostController) {
 
 
 
@@ -74,13 +74,19 @@ fun ProfileStatsCard(stats: List<StatItem>, modifier: Modifier = Modifier, navHo
                 }
                 ColoredButton(
                     roundness = 10.dp,
-                    buttonText = "Take a Test", buttonColor = lightBlue, textColor = Color.White,
+                    buttonText = if(takeTest) "Take a Test" else "See Full Progress", buttonColor = lightBlue, textColor = Color.White,
                     modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp, vertical = 15.dp)
                 ) {
-                    navHostController.navigate(HomeNav(
-                        route = "home",
-                        section = "stickyHeader"
-                    ))
+                    if(takeTest) {
+                        navHostController.navigate(
+                            HomeNav(
+                                route = "home",
+                                section = "stickyHeader"
+                            )
+                        )
+                    } else {
+                        navHostController.navigate("progress")
+                    }
                 }
             }
 

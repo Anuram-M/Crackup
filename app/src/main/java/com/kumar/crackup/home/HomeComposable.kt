@@ -29,17 +29,20 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
+import com.google.firebase.firestore.FirebaseFirestore
 import com.kumar.crackup.ui.theme.bodyFont
 import com.kumar.crackup.ui.theme.bodyFontLargeSize
 import com.kumar.crackup.ui.theme.dialogCardColor
 import com.kumar.crackup.ui.theme.lightBlue
 import com.kumar.crackup.ui.theme.screenBackground
+import com.kumar.crackup.util.FirebaseUtil
 import com.kumar.crackup.util.PrefConstants
 import com.kumar.crackup.util.PreferenceUtil
 import com.kumar.crackup.viewmodel.MyViewModel
@@ -55,9 +58,23 @@ fun HomeComposable(navHostController: NavHostController, myViewModel: MyViewMode
     val user by myViewModel.currentUser.collectAsStateWithLifecycle()
     val listState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
-
+    val context = LocalContext.current.applicationContext
     val pages = 3
     val pagerState = rememberPagerState(pageCount = { pages })
+
+//    val scrollState = rememberScrollState()
+//    LaunchedEffect(pagerState.currentPage) {
+//        scrollState.scrollTo(0)
+//    }
+//
+//    LaunchedEffect(Unit) {
+//        coroutineScope.launch {
+//            FirebaseUtil.exportQuestionsToLocalFile(context,
+//                FirebaseFirestore.getInstance(),
+//                subject = "aptitude",
+//                subTopic = "simplification")
+//        }
+//    }
 
     //pages
     val navigationSections = remember {
@@ -106,6 +123,7 @@ fun HomeComposable(navHostController: NavHostController, myViewModel: MyViewMode
             item(key = "header") {
                 HeaderSection(
                     userName = user?.name.toString(),
+                    streakDays = user?.currentStreak ?: 0,
                     onStartQuizClick = {
                        //need to add functionality
                     }
@@ -158,6 +176,7 @@ fun HomeComposable(navHostController: NavHostController, myViewModel: MyViewMode
             item {
                 HorizontalPager(
                     state = pagerState,
+
                     modifier = Modifier
                         .fillMaxWidth()
                         .heightIn(min = 400.dp, max = 2000.dp),

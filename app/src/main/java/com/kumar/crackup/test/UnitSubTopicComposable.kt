@@ -47,7 +47,9 @@ fun UnitSubTopicComposable(navController: NavHostController, viewModel: MyViewMo
             }
 
             emptyTopic?.let {
-                NoContentDialog(topicName = emptyTopic!!) { }
+                NoContentDialog(topicName = emptyTopic!!) {
+                    emptyTopic = null
+                }
             }
         }
     }

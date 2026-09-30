@@ -6,14 +6,19 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kumar.crackup.auth.CreateAccountFormInput
 import com.kumar.crackup.auth.SignInFormInput
+import com.kumar.crackup.model.DailyChallengeUiState
 import com.kumar.crackup.model.Exam
 import com.kumar.crackup.model.NewQuestion
+import com.kumar.crackup.model.NewTopicProgress
 import com.kumar.crackup.model.QueryModel
 import com.kumar.crackup.model.SubTopic
 import com.kumar.crackup.model.TamilUnit
 import com.kumar.crackup.model.Topic
 import com.kumar.crackup.model.TopicType
+import com.kumar.crackup.progress.DailyActivityModel
 import com.kumar.crackup.states.NavStateClass
+import com.kumar.crackup.test.AttemptModel
+import com.kumar.crackup.util.AppContentUtil
 import com.kumar.crackup.util.FirebaseUtil
 import com.kumar.crackup.util.LoadingManager
 import com.kumar.crackup.util.NetworkConnectivityObserver
@@ -88,7 +93,35 @@ class MyViewModel @Inject constructor(
     val _splashShown = MutableStateFlow<Boolean>(false)
     val splashShown = _splashShown.asStateFlow()
 
+    val _dailyChallenge = MutableStateFlow<List<DailyChallengeUiState>>(emptyList())
+    val dailyChallenge = _dailyChallenge.asStateFlow()
 
+    val _topicProgress = MutableStateFlow<List<NewTopicProgress>>(emptyList())
+//    val topicProgress = _topicProgress.asStateFlow()
+
+    val topicProgress = FirebaseUtil.getTopicProgress().stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = emptyList()
+    )
+//    val _globalProgress = MutableStateFlow<NewTopicProgress?>(null)
+//    val globalProgress = _globalProgress.asStateFlow()
+    val globalProgress = FirebaseUtil.getGlobalProgress().stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = null
+    )
+
+    val _globalTotalQuestions = MutableStateFlow<Int>(0)
+    val globalTotal = _globalTotalQuestions.asStateFlow()
+
+//    val _dailyActivity = MutableStateFlow<List<DailyActivityModel>>(emptyList())
+    val monthlyActivity = FirebaseUtil.getMonthlyActivity()
+    .stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = emptyList()
+    )
 
     init {
         viewModelScope.launch {
@@ -96,9 +129,20 @@ class MyViewModel @Inject constructor(
         }
         viewModelScope.launch {
             _topics.value = FirebaseUtil.getTopics()
+            _globalTotalQuestions.value = calculateGlobalQuestions(_topics.value)
+        }
+        viewModelScope.launch {
+            _dailyChallenge.value = listOf(
+                DailyChallengeUiState(
+                    question = AppContentUtil.challenge,
+                )
+            )
         }
     }
 
+    fun calculateGlobalQuestions(topics: List<Topic>): Int {
+        return topics.sumOf { it.totalQuestions }
+    }
     fun updateSplashShown(shown: Boolean) {
         _splashShown.value = shown
     }
@@ -109,11 +153,35 @@ class MyViewModel @Inject constructor(
         }
     }
 
+    fun addAttempt(attemptModel: AttemptModel, parentName: String, totalQuestions: Int, globalQuestionsCount: Int) {
+        viewModelScope.launch {
+            Log.d("ERROR", "QuizResultScreen: ${attemptModel}")
+            FirebaseUtil.addAttempt(attemptModel, parentName, totalQuestions, globalQuestionsCount)
+        }
+    }
+
+//    fun getTopicProgress() {
+//        viewModelScope.launch {
+//            _topicProgress.value = FirebaseUtil.getTopicProgress()
+//        }
+//    }
+//    fun getGlobalProgress() {
+//        viewModelScope.launch {
+//            _globalProgress.value = FirebaseUtil.getGlobalProgress()
+//        }
+//    }
+
+//    fun getDailyActivity() {
+//        viewModelScope.launch {
+//            _dailyActivity.value = FirebaseUtil.getDailyActivity()
+////            Log.d(TAG, "getDailyActivity: ${}")
+//        }
+//    }
     fun topicSelected(newTopic: Topic, onNavToExam: () -> Unit, onNavToSubTopic: () -> Unit, onNavTamilUnits: () -> Unit) {
 
         viewModelScope.launch {
             _query.value = QueryModel()
-            _query.value = _query.value.copy(mainTopic = newTopic.topicQuery)
+            _query.value = _query.value.copy(mainTopic = newTopic.topicQuery, parentName = newTopic.name, totalQuestions = newTopic.totalQuestions)
             when(newTopic.type) {
                  TopicType.EXAM_YEAR -> {
                      _exams.value = FirebaseUtil.getExams()
