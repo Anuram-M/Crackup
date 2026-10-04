@@ -1,5 +1,6 @@
 package com.kumar.crackup.util
 
+import com.kumar.crackup.dailyChallenge.DailyChallengeModel
 import com.kumar.crackup.model.NewQuestion
 
 // ============================================================
@@ -85,5 +86,35 @@ object TestEvaluator {
 
     fun generateQuestionId(newQuestion: NewQuestion) : String {
         return "${newQuestion.mainTopic}_${newQuestion.subtopic}_${newQuestion.subCollection}_q${newQuestion.qno}"
+    }
+
+    fun evaluateDailyChallenge(
+        questions: List<DailyChallengeModel>,
+        answers: Map<Int, QuestionAnswerState> // keyed by question index, not id
+    ): QuizResult {
+        val total = questions.size
+        var correct = 0
+        var attempted = 0
+
+        questions.forEachIndexed { index, question ->
+            val selected = answers[index]?.selectedOptionIndex
+            if (selected != null) {
+                attempted++
+                if (selected == question.answer) correct++
+            }
+        }
+
+        val incorrect = attempted - correct
+        val unanswered = total - attempted
+        val accuracy = if (attempted > 0) (correct.toFloat() / attempted) * 100f else 0f
+
+        return QuizResult(
+            totalQuestions = total,
+            attempted = attempted,
+            correct = correct,
+            incorrect = incorrect,
+            unanswered = unanswered,
+            accuracyAmongAttempted = accuracy,
+        )
     }
 }

@@ -1,7 +1,7 @@
 package com.kumar.crackup.di
 
 import android.content.Context
-import com.kumar.crackup.db.DailyChallengeDAO
+import com.kumar.crackup.dailyChallenge.DailyChallengeDAO
 import com.kumar.crackup.db.MyDatabase
 import dagger.Module
 import dagger.Provides

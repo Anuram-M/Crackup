@@ -6,6 +6,9 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverter
 import androidx.room.TypeConverters
+import com.kumar.crackup.dailyChallenge.DailyChallenge
+import com.kumar.crackup.dailyChallenge.DailyChallengeDAO
+import com.kumar.crackup.dailyChallenge.DailyChallengeTypeConvertor
 
 @Database(entities = [DailyChallenge::class], version = 1, exportSchema = false)
 @TypeConverters(DailyChallengeTypeConvertor::class)

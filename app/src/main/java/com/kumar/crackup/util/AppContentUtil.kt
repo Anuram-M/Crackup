@@ -1,12 +1,10 @@
 package com.kumar.crackup.util
 
 import com.kumar.crackup.currentaffairs.CACategoryModel
-import com.kumar.crackup.db.DailyChallenge
-import com.kumar.crackup.model.DailyChallengeModel
+import com.kumar.crackup.dailyChallenge.DailyChallengeModel
 import com.kumar.crackup.model.DayStreak
 import com.kumar.crackup.model.FeatureItem
 import com.kumar.crackup.model.LocalizedInstruction
-import com.kumar.crackup.model.NewQuestion
 import com.kumar.crackup.model.ServiceModel
 import com.kumar.crackup.model.StatItem
 import com.kumar.crackup.model.TopicProgress

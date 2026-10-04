@@ -36,13 +36,12 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
-import com.google.firebase.firestore.FirebaseFirestore
+import com.kumar.crackup.dailyChallenge.DailyChallengeConfirmationDialog
 import com.kumar.crackup.ui.theme.bodyFont
 import com.kumar.crackup.ui.theme.bodyFontLargeSize
 import com.kumar.crackup.ui.theme.dialogCardColor
 import com.kumar.crackup.ui.theme.lightBlue
 import com.kumar.crackup.ui.theme.screenBackground
-import com.kumar.crackup.util.FirebaseUtil
 import com.kumar.crackup.util.PrefConstants
 import com.kumar.crackup.util.PreferenceUtil
 import com.kumar.crackup.viewmodel.MyViewModel
@@ -62,6 +61,11 @@ fun HomeComposable(navHostController: NavHostController, myViewModel: MyViewMode
     val pages = 3
     val pagerState = rememberPagerState(pageCount = { pages })
 
+    val dailyChallenge by myViewModel.dailyChallenge.collectAsStateWithLifecycle()
+
+    LaunchedEffect(Unit) {
+        myViewModel.updateDailyChallenge()
+    }
 //    val scrollState = rememberScrollState()
 //    LaunchedEffect(pagerState.currentPage) {
 //        scrollState.scrollTo(0)
@@ -110,6 +114,9 @@ fun HomeComposable(navHostController: NavHostController, myViewModel: MyViewMode
         }
     }
 
+    var showConfirmation = remember {
+        mutableStateOf(false)
+    }
     Box(modifier = Modifier
         .fillMaxSize()
         .background(screenBackground)) {
@@ -121,10 +128,19 @@ fun HomeComposable(navHostController: NavHostController, myViewModel: MyViewMode
         ) {
 
             item(key = "header") {
+                if(dailyChallenge != null) {
+                    Log.d("ROOMD", "HomeComposable: ${dailyChallenge.attempted}")
+                    Log.d("ROOMD", "HomeComposable: ${dailyChallenge}")
+                }
                 HeaderSection(
                     userName = user?.name.toString(),
                     streakDays = user?.currentStreak ?: 0,
+                    isCompleted = dailyChallenge.isCompleted,
+                    isPaused = dailyChallenge.isPaused,
+                    dailyProgress = if(dailyChallenge == null || dailyChallenge.attempted == 0) 0.0f else (dailyChallenge.attempted).toFloat()/10,
                     onStartQuizClick = {
+                        showConfirmation.value = true
+//                        navHostController.navigate("dailyChallenge")
                        //need to add functionality
                     }
                 )
@@ -187,7 +203,6 @@ fun HomeComposable(navHostController: NavHostController, myViewModel: MyViewMode
                         1 -> VideoSection(lifecycleOwner)
                         2 -> ExamsInfoSection()
                     }
-
                 }
             }
         }
@@ -198,5 +213,18 @@ fun HomeComposable(navHostController: NavHostController, myViewModel: MyViewMode
 //                        PreferenceUtil.putBoolean(PrefConstants.SHOW_CONTACT, false)
 //                    })
 //                }
+        if(showConfirmation.value )
+            DailyChallengeConfirmationDialog(
+                isPaused = true,
+                progress = 20,
+                onFreshStart = {
+                    showConfirmation.value = false
+                    navHostController.navigate("dailyChallenge")
+                },
+                onContinue = {
+                    showConfirmation.value = false
+                    navHostController.navigate("dailyChallenge")
+                }
+            )
     }
 }

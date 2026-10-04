@@ -46,8 +46,10 @@ fun HeaderSection(
     userLevel: Int = 12,
     streakDays: Int = 5,
     coins: Int = 450,
-    dailyProgress: Float = 0.65f,
-    onStartQuizClick: () -> Unit = {}
+    dailyProgress: Float = 0.0f,
+    onStartQuizClick: () -> Unit = {},
+    isCompleted: Boolean,
+    isPaused: Boolean
 ) {
     // Top Half Container with Rounded Bottom Corners & Gradient
     Surface(
@@ -171,7 +173,7 @@ fun HeaderSection(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             BodyText(
-                                text = "General Knowledge",
+                                text = "Previous Year Questions",
                                 textColor = textBlack,
                                 textSize = bodyFontSize,
                                 fontWeight = FontWeight.SemiBold
@@ -179,7 +181,15 @@ fun HeaderSection(
 
                             // CTA Play Button
                             ColoredButton(
-                                buttonText = "Continue",
+                                buttonText = if (isPaused) {
+                                    "Continue"
+                                } else {
+                                    if (isCompleted) {
+                                        "View Result"
+                                    } else {
+                                        "Start"
+                                    }
+                                },
                                 buttonColor = lightBlue,
                                 roundness = 14.dp,
                                 textColor = Color.White,

@@ -58,12 +58,10 @@ import androidx.core.view.WindowCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavDestination.Companion.hasRoute
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
 import androidx.navigation.toRoute
 import com.kumar.crackup.about.AboutComposable
 import com.kumar.crackup.auth.LoginComposable
@@ -72,11 +70,10 @@ import com.kumar.crackup.components.CustomBottomNavigation
 import com.kumar.crackup.contact.ContactComposable
 import com.kumar.crackup.currentaffairs.ArticleDetailPreview
 import com.kumar.crackup.currentaffairs.CurrentAffairsScreen
-import com.kumar.crackup.currentaffairs.DailyCurrentAffairsScreen
 import com.kumar.crackup.currentaffairs.DynamicMonthCurrentAffairsComposable
 import com.kumar.crackup.currentaffairs.Entry
-import com.kumar.crackup.currentaffairs.NewsAffairsList
 import com.kumar.crackup.faq.FaqComposable
+import com.kumar.crackup.dailyChallenge.DailyChallengeComposable
 import com.kumar.crackup.home.HomeComposable
 import com.kumar.crackup.home.HomeNav
 import com.kumar.crackup.home.Login
@@ -509,11 +506,11 @@ fun MainCompose(myViewModel: MyViewModel = hiltViewModel()) {
                 composable("currentaffairs") { Entry(navController) }
                 composable("ca_daily") { CurrentAffairsScreen(navController, myViewModel)}
                 composable("ca_details") { ArticleDetailPreview()}
-//                composable("ca_daily") { NewsAffairsList() }
                 composable("ca_monthly") { DynamicMonthCurrentAffairsComposable() }
                 composable("ca_quiz") { CurrentAffairsScreen(navController, myViewModel) }
                 composable("currentaffairsold") { CurrentAffairsScreen(navController, myViewModel) }
                 composable("notification") { NotificationComposable(navController, myViewModel) }
+                composable("dailyChallenge") { DailyChallengeComposable(navController, myViewModel) }
             }
         }
     }

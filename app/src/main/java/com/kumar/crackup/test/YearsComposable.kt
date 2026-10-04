@@ -1,7 +1,6 @@
 package com.kumar.crackup.test
 
 import android.util.Log
-import android.widget.Toast
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -31,6 +30,18 @@ fun YearsComposable(navController: NavHostController, viewModel: MyViewModel) {
                 Log.d("QUERRYM", "SubTopicsScreen: ${viewModel.query.value}")
                 viewModel.getQuestions(viewModel.query.value, {
                     if(viewModel.questions.value.isNotEmpty()) {
+//                        val dailyChallenge = mutableListOf<DailyChallengeModel>()
+//                        viewModel.questions.value.forEach {
+//                            dailyChallenge.add(it.toDailyChallenge())
+//                            Log.d("QUERRYM", "YearsComposable: ${it}")
+//                        }
+//                        if(dailyChallenge.isNotEmpty()) {
+//                            coroutineScope.launch {
+//
+//                                FirebaseUtil.putDailyChallenge(dailyChallenge)
+//                            }
+//                        }
+//                        Log.d("QUERRYM", "YearsComposable: ${dailyChallenge}")
                         navController.navigate("practice")
                     } else {
                         emptyTopic = "${viewModel.query.value.mainTopic}-${viewModel.query.value.subTopic}-${viewModel.query.value.subCollection}"

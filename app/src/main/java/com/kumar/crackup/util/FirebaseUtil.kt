@@ -12,12 +12,12 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
 import com.kumar.crackup.UserModel
 import com.kumar.crackup.auth.CreateAccountFormInput
+import com.kumar.crackup.dailyChallenge.DailyChallengeModel
 import com.kumar.crackup.model.Exam
 import com.kumar.crackup.model.NewQuestion
 import com.kumar.crackup.model.NewTopicProgress
 import com.kumar.crackup.model.QueryModel
 import com.kumar.crackup.model.Question
-import com.kumar.crackup.model.SafeNewQuestion
 import com.kumar.crackup.model.SubTopic
 import com.kumar.crackup.model.TamilUnit
 import com.kumar.crackup.model.Topic
@@ -891,4 +891,32 @@ object FirebaseUtil {
         return (0 until arr.length()).map { arr.getString(it) }
     }
 
+    suspend fun putDailyChallenge(challengeQuestions: List<DailyChallengeModel>) {
+        val firestore = FirebaseFirestore.getInstance()
+        val userId = FirebaseAuth.getInstance().currentUser?.uid
+        val batch = firestore.batch()
+
+        challengeQuestions.forEach {
+            val doc = firestore.collection("dailyChallenge").document()
+            batch.set(doc, it)
+        }
+        batch.commit()
+            .addOnSuccessListener {
+                Log.d("ERROR", "putDailyChallenge: succeeded in adding daily challenge")
+            }
+            .addOnFailureListener {
+                Log.d("ERROR", "putDailyChallenge: failed to uploaddaily challenge, ${it.message}")
+            }
+    }
+
+
+    suspend fun getDailyChallenge(): List<DailyChallengeModel>  {
+        val firestore = FirebaseFirestore.getInstance()
+        val userId = FirebaseAuth.getInstance().currentUser?.uid
+        return firestore
+            .collection("dailyChallenge")
+            .get()
+            .await()
+            .mapNotNull { it.toObject(DailyChallengeModel::class.java) }
+    }
 }

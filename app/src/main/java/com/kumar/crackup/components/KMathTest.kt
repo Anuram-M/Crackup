@@ -51,6 +51,7 @@ fun NativeMathText(
     content: String,
     modifier: Modifier = Modifier,
     fontWeight: FontWeight,
+    textSize: TextUnit = bodyFontSize,
     color: Color = textBlack
 ) {
     val inlineContentMap = remember(content) { mutableMapOf<String, InlineTextContent>() }
@@ -62,7 +63,7 @@ fun NativeMathText(
     Text(
         text = annotated,
         inlineContent = inlineContentMap,
-        fontSize = bodyFontSize,
+        fontSize = textSize,
         color = color,
         fontFamily = bodyFont,
         lineHeight = 24.sp,

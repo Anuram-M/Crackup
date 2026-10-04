@@ -268,6 +268,7 @@ private fun QuizScreen(
             if(!showAnswer)
             TimerComponent(
                 totalSeconds = 10800,
+                elapsedSeconds = { seconds ->  }
             ) {
                 onSubmit(false)
             }
@@ -612,15 +613,14 @@ private fun QuizScreen(
 }
 
 @Composable
-private fun OptionRow(
-    showAnswer: Boolean,
+fun OptionRow(
+    showAnswer: Boolean = false,
     isRight: Boolean,
     text: String,
     index: String,
-    isSelected: Boolean,
-    isMarkedForReview: Boolean,
+    isSelected: Boolean = false,
+    isMarkedForReview: Boolean = false,
     onClick: () -> Unit,
-
 ) {
     val borderColor = if(showAnswer) {
         if(isRight) forestGreen else if(isSelected && !isRight) Color.Red else  Color.Gray
@@ -774,7 +774,7 @@ private fun QuizResultScreen(
 }
 
 @Composable
-private fun ResultStat(label: String, value: String) {
+fun ResultStat(label: String, value: String) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         BodyText(text = value, textSize = bodyFontLargeSize, fontWeight = FontWeight.Bold)
         BodyText(label, textSize = bodyFontTinySize, textColor = Color.Gray)

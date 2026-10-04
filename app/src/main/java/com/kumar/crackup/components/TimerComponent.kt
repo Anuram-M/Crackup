@@ -16,6 +16,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import com.kumar.crackup.R
 import com.kumar.crackup.templates.BodyText
@@ -26,7 +28,10 @@ import kotlinx.coroutines.delay
 
 @Composable
 fun TimerComponent(
+    iconSize: Dp = 16.dp,
+    fontSize: TextUnit = bodyFontSize,
     totalSeconds: Long,
+    elapsedSeconds: (Long) -> Unit,
     onFinished: () -> Unit
 ) {
     var timeLeft by remember { mutableLongStateOf(totalSeconds) }
@@ -53,11 +58,11 @@ fun TimerComponent(
             Icon(
                 painter = painterResource(R.drawable.clock),
                 contentDescription = null,
-                modifier = Modifier.size(16.dp),
+                modifier = Modifier.size(iconSize),
                 tint = contentColor
             )
             SmallWidthSpacer()
-            BodyText(text = time, textColor = contentColor, textSize = bodyFontSize)
+            BodyText(text = time, textColor = contentColor, textSize = fontSize)
         }
 
     }
