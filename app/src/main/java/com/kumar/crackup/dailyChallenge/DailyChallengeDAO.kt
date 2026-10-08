@@ -2,6 +2,7 @@ package com.kumar.crackup.dailyChallenge
 
 import androidx.room.Dao
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy.Companion.REPLACE
 import androidx.room.Query
 import androidx.room.Upsert
 import kotlinx.coroutines.flow.Flow
@@ -9,7 +10,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface DailyChallengeDAO {
 
-    @Insert
+    @Insert(onConflict = REPLACE)
     suspend fun insetQuestions(dailyChallenge: DailyChallenge)
 
     @Query("SELECT * FROM DAILY_CHALLENGE")

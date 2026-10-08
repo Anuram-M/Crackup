@@ -185,7 +185,7 @@ fun HeaderSection(
                                     "Continue"
                                 } else {
                                     if (isCompleted) {
-                                        "View Result"
+                                        "Result"
                                     } else {
                                         "Start"
                                     }

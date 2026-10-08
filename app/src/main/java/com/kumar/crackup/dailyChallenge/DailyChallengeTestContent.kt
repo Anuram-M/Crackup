@@ -59,7 +59,7 @@ fun DailyChallengeTestContent(
     onSelectOption: (questionIndex: Int, optionIndex: Int) -> Unit,
     onResetOption: (Int) -> Unit,
     onPauseClicked: (Long) -> Unit,
-    onSubmitChallengeClicked: () -> Unit,
+    onSubmitChallengeClicked: (Long) -> Unit,
 ) {
     if (questions.isEmpty()) {
         return
@@ -89,7 +89,7 @@ fun DailyChallengeTestContent(
 
                         elapsedSeconds = seconds
                     },
-                    onFinished = onSubmitChallengeClicked,
+                    onFinished = { onSubmitChallengeClicked(elapsedSeconds) },
                 )
 
                 SmallHeightSpacer()
@@ -117,7 +117,7 @@ fun DailyChallengeTestContent(
                             containerColor = lightBlue,
                             disabledContainerColor = Color.Gray
                         ),
-                        onClick = { onSubmitChallengeClicked() },
+                        onClick = { onSubmitChallengeClicked(elapsedSeconds) },
                         modifier = Modifier
                     ) {
                         Text("Submit", color = Color.White)

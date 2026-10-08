@@ -64,7 +64,7 @@ fun HomeComposable(navHostController: NavHostController, myViewModel: MyViewMode
     val dailyChallenge by myViewModel.dailyChallenge.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
-        myViewModel.updateDailyChallenge()
+        myViewModel.getDailyChallenge()
     }
 //    val scrollState = rememberScrollState()
 //    LaunchedEffect(pagerState.currentPage) {
@@ -219,6 +219,7 @@ fun HomeComposable(navHostController: NavHostController, myViewModel: MyViewMode
                 progress = 20,
                 onFreshStart = {
                     showConfirmation.value = false
+
                     navHostController.navigate("dailyChallenge")
                 },
                 onContinue = {

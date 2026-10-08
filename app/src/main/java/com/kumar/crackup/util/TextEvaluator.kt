@@ -2,6 +2,7 @@ package com.kumar.crackup.util
 
 import com.kumar.crackup.dailyChallenge.DailyChallengeModel
 import com.kumar.crackup.model.NewQuestion
+import kotlinx.serialization.Serializable
 
 // ============================================================
 // DATA MODELS
@@ -16,6 +17,7 @@ import com.kumar.crackup.model.NewQuestion
  * NOT affect whether the answer counts during evaluation. Any selected
  * answer counts, marked or not.
  */
+@Serializable
 data class QuestionAnswerState(
     val selectedOptionIndex: Int? = null,
     val isMarkedForReview: Boolean = false

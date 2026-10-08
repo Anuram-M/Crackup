@@ -72,7 +72,7 @@ fun DailyChallengeConfirmationDialog(
                     Button(
                         colors = ButtonDefaults.buttonColors(containerColor = lightBlue),
                         onClick = {
-
+                           onContinue()
                         }
                     ) {
                         BodyText(

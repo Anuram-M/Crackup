@@ -126,6 +126,9 @@ class MyViewModel @Inject constructor(
             _topics.value = FirebaseUtil.getTopics()
             _globalTotalQuestions.value = calculateGlobalQuestions(_topics.value)
         }
+    }
+
+    fun getDailyChallenge() {
         viewModelScope.launch {
             val todayDate = StreakCalculator.getTodayDate()
             dailyChallengeDAO.getDailyChallenge().collect { data ->
@@ -150,26 +153,15 @@ class MyViewModel @Inject constructor(
                         _dailyChallenge.value = DailyChallengeUiState(
                             questions = data.questions,
                             attempted = data.answeredQuestions,
-                            currentQuestionIndex = data.currentQuestionIndex
+                            currentQuestionIndex = data.currentQuestionIndex,
+                            answers = data.answers,
+                            isCompleted = data.isCompleted
                         )
                     }
                 }
             }
-
-//            dailyChallengeDAO.deleteAllQuestions()
-
         }
-//        viewModelScope.launch {
-//            val questions = FirebaseUtil.getDailyChallenge()
-//            _dailyChallenge.value = _dailyChallenge.value.copy(questions = questions)
-////            _dailyChallenge.value = listOf(
-////                DailyChallengeUiState(
-//////                    question = AppContentUtil.challenge,
-////                )
-////            )
-//        }
     }
-
     fun updateDailyChallenge() {
         viewModelScope.launch {
 //            val questions = FirebaseUtil.getDailyChallenge()

@@ -54,9 +54,9 @@ import com.kumar.crackup.util.QuizResult
 
 @Composable
 fun DailyChallengeReviewTest(
-    result: QuizResult,
+    result: QuizResult?,
     questions: List<DailyChallengeModel>,
-    answers: SnapshotStateMap<Int, QuestionAnswerState>
+    answers: Map<Int, QuestionAnswerState>
 ) {
 
     var currentIndex by remember {
@@ -72,12 +72,14 @@ fun DailyChallengeReviewTest(
             modifier = Modifier.fillMaxWidth()
         ) {
 
-            DailyChallengeStat(result)
+//            DailyChallengeStat(result)
             LazyColumn() {
                 itemsIndexed(
                     items = questions,
                     key = { _, item -> item.question }) { index, question ->
-                    QuestionAnswer(question, index, answers)
+                    QuestionAnswer(question, index,
+                        answers as SnapshotStateMap<Int, QuestionAnswerState>
+                    )
                 }
             }
         }
@@ -146,10 +148,10 @@ fun QuestionAnswer(
             question.options.forEachIndexed { optionIndex, optionText ->
                 ReviewOptionRow(
                     isRight = optionIndex == question.answer,
+                    currentIndex = optionIndex,
                     text = optionText,
                     index = alphaIndex(optionIndex),
                     state = state,
-                    isCorrectOption = question.answer,
                 )
                 HeightSpacer()
             }
@@ -191,15 +193,15 @@ fun QuestionAnswer(
 @Composable
 fun ReviewOptionRow(
     isRight: Boolean,
+    currentIndex: Int,
     text: String,
     index: String,
     state: QuestionAnswerState,
-    isCorrectOption: Int = 0,
 ) {
     val borderColor =
-        if (isRight) forestGreen else if (state.selectedOptionIndex != null) Color.Red else Color.Gray
+        if (isRight) forestGreen else if (!isRight && state.selectedOptionIndex == currentIndex ) Color.Red else Color.Gray
     val backgroundColor =
-        if (isRight) forestGreen.copy(alpha = 0.08f) else if (state.selectedOptionIndex != null && state.selectedOptionIndex != isCorrectOption) Color.Red.copy(
+        if (isRight) forestGreen.copy(alpha = 0.08f) else if (!isRight && state.selectedOptionIndex == currentIndex ) Color.Red.copy(
             alpha = 0.08f
         ) else Color.Transparent
 

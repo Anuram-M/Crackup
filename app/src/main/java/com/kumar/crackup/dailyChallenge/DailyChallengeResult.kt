@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -24,6 +25,7 @@ import com.kumar.crackup.ui.theme.bodyFontLargeSize
 import com.kumar.crackup.ui.theme.bodyFontSmallSize
 import com.kumar.crackup.ui.theme.heroFontLargeSize
 import com.kumar.crackup.ui.theme.lightBlue
+import com.kumar.crackup.util.QuestionAnswerState
 import com.kumar.crackup.util.QuizResult
 
 @Composable
@@ -31,17 +33,19 @@ fun DailyChallengeResult(
     result: QuizResult,
     goBack: () -> Unit,
     updateRoom: (DailyChallengeUiState) -> Unit,
-    questions: List<DailyChallengeModel>
+    questions: List<DailyChallengeModel>,
+    answers: SnapshotStateMap<Int, QuestionAnswerState>,
+    seconds: Long
 ) {
 
     LaunchedEffect(Unit) {
         val model = DailyChallengeUiState(
             questions = questions,
+            answers = answers,
             attempted = result.attempted,
-            showAnswer = true,
             isCompleted = true,
             isPaused = false,
-            elapsedTime = 100
+            elapsedTime = seconds
         )
         Log.d("ROOMD", "Result: ${model.attempted}")
         updateRoom(model)

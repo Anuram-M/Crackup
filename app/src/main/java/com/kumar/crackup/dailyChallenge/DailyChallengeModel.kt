@@ -2,6 +2,7 @@ package com.kumar.crackup.dailyChallenge
 
 import com.kumar.crackup.model.NewQuestion
 import com.kumar.crackup.progress.StreakCalculator
+import com.kumar.crackup.util.QuestionAnswerState
 import kotlinx.serialization.Serializable
 @Serializable
 data class DailyChallengeModel(
@@ -15,11 +16,11 @@ data class DailyChallengeModel(
 )
 
 
-@Serializable
+//@Serializable
 data class DailyChallengeUiState(
     val questions: List<DailyChallengeModel> = emptyList(),
+    val answers: Map<Int, QuestionAnswerState> = emptyMap(),
     val attempted: Int = 0,
-    val showAnswer: Boolean = false,
     val currentQuestionIndex: Int = 0,
     val selectedAnswers: Map<Int, Int> = emptyMap(),
     val isPaused: Boolean = false,
@@ -46,5 +47,7 @@ fun DailyChallengeUiState.toDailyChallengeForRoom(): DailyChallenge {
         currentQuestionIndex = this.currentQuestionIndex,
         date = StreakCalculator.getTodayDate(),
         questions = this.questions,
+        answers = this.answers,
+        isCompleted = this.isCompleted
     )
 }
