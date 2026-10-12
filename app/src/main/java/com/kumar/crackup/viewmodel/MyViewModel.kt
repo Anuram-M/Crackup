@@ -4,24 +4,25 @@ import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.NavController
-import com.google.firebase.auth.FirebaseUser
+import com.kumar.crackup.auth.CreateAccountFormInput
+import com.kumar.crackup.auth.SignInFormInput
+import com.kumar.crackup.dailyChallenge.DailyChallengeDAO
+import com.kumar.crackup.dailyChallenge.DailyChallengeUiState
 import com.kumar.crackup.model.Exam
-import com.kumar.crackup.model.FireUser
 import com.kumar.crackup.model.NewQuestion
 import com.kumar.crackup.model.QueryModel
 import com.kumar.crackup.model.SubTopic
 import com.kumar.crackup.model.TamilUnit
 import com.kumar.crackup.model.Topic
 import com.kumar.crackup.model.TopicType
+import com.kumar.crackup.dailyChallenge.toDailyChallengeForRoom
+import com.kumar.crackup.progress.StreakCalculator
 import com.kumar.crackup.states.NavStateClass
-import com.kumar.crackup.util.CreateAccountFormInput
+import com.kumar.crackup.test.AttemptModel
 import com.kumar.crackup.util.FirebaseUtil
 import com.kumar.crackup.util.LoadingManager
 import com.kumar.crackup.util.NetworkConnectivityObserver
 import com.kumar.crackup.util.NetworkStatus
-import com.kumar.crackup.util.PreferenceUtil
-import com.kumar.crackup.util.SignInFormInput
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.channels.Channel
@@ -30,8 +31,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -40,7 +39,8 @@ import javax.inject.Inject
 @HiltViewModel
 class MyViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
-    private val loadingManager: LoadingManager
+    private val loadingManager: LoadingManager,
+    private val dailyChallengeDAO: DailyChallengeDAO
 ): ViewModel() {
 
     private val _initialNav = Channel<NavStateClass>(Channel.BUFFERED)
@@ -94,7 +94,29 @@ class MyViewModel @Inject constructor(
     val _splashShown = MutableStateFlow<Boolean>(false)
     val splashShown = _splashShown.asStateFlow()
 
+    val _dailyChallenge = MutableStateFlow<DailyChallengeUiState>(DailyChallengeUiState())
+    val dailyChallenge = _dailyChallenge.asStateFlow()
 
+    val topicProgress = FirebaseUtil.getTopicProgress().stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = emptyList()
+    )
+    val globalProgress = FirebaseUtil.getGlobalProgress().stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = null
+    )
+
+    val _globalTotalQuestions = MutableStateFlow<Int>(0)
+    val globalTotal = _globalTotalQuestions.asStateFlow()
+
+    val monthlyActivity = FirebaseUtil.getMonthlyActivity()
+    .stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = emptyList()
+    )
 
     init {
         viewModelScope.launch {
@@ -102,9 +124,61 @@ class MyViewModel @Inject constructor(
         }
         viewModelScope.launch {
             _topics.value = FirebaseUtil.getTopics()
+            _globalTotalQuestions.value = calculateGlobalQuestions(_topics.value)
         }
     }
 
+    fun getDailyChallenge() {
+        viewModelScope.launch {
+            val todayDate = StreakCalculator.getTodayDate()
+            dailyChallengeDAO.getDailyChallenge().collect { data ->
+                when {
+                    data == null -> {
+                        Log.d("ROOMD", ": room data null ${data}")
+                        val questions = FirebaseUtil.getDailyChallenge()
+                        _dailyChallenge.value = _dailyChallenge.value.copy(questions = questions)
+                        dailyChallengeDAO.insetQuestions(_dailyChallenge.value.toDailyChallengeForRoom())
+                    }
+                    (!data.date.equals(todayDate)) -> {
+                        Log.d("ROOMD", ": room data yesterday: ${data}")
+                        dailyChallengeDAO.deleteAllQuestions()
+                        val questions = FirebaseUtil.getDailyChallenge()
+                        _dailyChallenge.value = _dailyChallenge.value.copy(questions = questions)
+                        dailyChallengeDAO.updateQuestions(_dailyChallenge.value.toDailyChallengeForRoom())
+
+                    }
+
+                    (data.date.equals(todayDate)) -> {
+                        Log.d("ROOMD", ": room data today ${data}")
+                        _dailyChallenge.value = DailyChallengeUiState(
+                            questions = data.questions,
+                            attempted = data.answeredQuestions,
+                            currentQuestionIndex = data.currentQuestionIndex,
+                            answers = data.answers,
+                            isCompleted = data.isCompleted
+                        )
+                    }
+                }
+            }
+        }
+    }
+    fun updateDailyChallenge() {
+        viewModelScope.launch {
+//            val questions = FirebaseUtil.getDailyChallenge()
+//            _dailyChallenge.value = _dailyChallenge.value.copy(questions = questions)
+        }
+    }
+
+    fun updateRoom(dailyChallengeUiState: DailyChallengeUiState) {
+        viewModelScope.launch {
+            Log.d("ROOMD", "updateRoom: ${dailyChallengeUiState.toDailyChallengeForRoom()}")
+            dailyChallengeDAO.updateQuestions(dailyChallengeUiState.toDailyChallengeForRoom())
+        }
+    }
+
+    fun calculateGlobalQuestions(topics: List<Topic>): Int {
+        return topics.sumOf { it.totalQuestions }
+    }
     fun updateSplashShown(shown: Boolean) {
         _splashShown.value = shown
     }
@@ -115,11 +189,35 @@ class MyViewModel @Inject constructor(
         }
     }
 
+    fun addAttempt(attemptModel: AttemptModel, parentName: String, totalQuestions: Int, globalQuestionsCount: Int) {
+        viewModelScope.launch {
+            Log.d("ERROR", "QuizResultScreen: ${attemptModel}")
+            FirebaseUtil.addAttempt(attemptModel, parentName, totalQuestions, globalQuestionsCount)
+        }
+    }
+
+//    fun getTopicProgress() {
+//        viewModelScope.launch {
+//            _topicProgress.value = FirebaseUtil.getTopicProgress()
+//        }
+//    }
+//    fun getGlobalProgress() {
+//        viewModelScope.launch {
+//            _globalProgress.value = FirebaseUtil.getGlobalProgress()
+//        }
+//    }
+
+//    fun getDailyActivity() {
+//        viewModelScope.launch {
+//            _dailyActivity.value = FirebaseUtil.getDailyActivity()
+////            Log.d(TAG, "getDailyActivity: ${}")
+//        }
+//    }
     fun topicSelected(newTopic: Topic, onNavToExam: () -> Unit, onNavToSubTopic: () -> Unit, onNavTamilUnits: () -> Unit) {
 
         viewModelScope.launch {
             _query.value = QueryModel()
-            _query.value = _query.value.copy(mainTopic = newTopic.topicQuery)
+            _query.value = _query.value.copy(mainTopic = newTopic.topicQuery, parentName = newTopic.name, totalQuestions = newTopic.totalQuestions)
             when(newTopic.type) {
                  TopicType.EXAM_YEAR -> {
                      _exams.value = FirebaseUtil.getExams()

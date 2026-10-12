@@ -1,9 +1,14 @@
 package com.kumar.crackup.util
 
+import com.kumar.crackup.currentaffairs.CACategoryModel
+import com.kumar.crackup.dailyChallenge.DailyChallengeModel
+import com.kumar.crackup.model.DayStreak
 import com.kumar.crackup.model.FeatureItem
 import com.kumar.crackup.model.LocalizedInstruction
 import com.kumar.crackup.model.ServiceModel
 import com.kumar.crackup.model.StatItem
+import com.kumar.crackup.model.TopicProgress
+import com.kumar.crackup.model.WeekStreak
 
 object AppContentUtil {
 
@@ -145,4 +150,244 @@ object AppContentUtil {
                 subTitle = "Improve speed and accuracy with practice tests"
             )
         )
+
+    val dayStreaks = listOf(
+        DayStreak(
+            label = "Monday",
+            completed = true
+        ),
+        DayStreak(
+            label = "Tuesday",
+            completed = true
+        ),
+        DayStreak(
+            label = "Wednesday",
+            completed = true
+        ),
+        DayStreak(
+            label = "Thursday",
+            completed = false
+        ),
+        DayStreak(
+            label = "Friday",
+            completed = false
+        ),
+        DayStreak(
+            label = "Saturday",
+            completed = false
+        ),
+        DayStreak(
+            label = "Sunday",
+            completed = false
+        ),
+
+        )
+
+    val weekStreaks = listOf(
+        WeekStreak(
+            label = "",
+            daysCompleted = 4,
+        ),
+        WeekStreak(
+            label = "",
+            daysCompleted = 6,
+        ),
+        WeekStreak(
+            label = "",
+            daysCompleted = 3,
+        )
+    )
+
+    val topicsProgress = listOf(
+        TopicProgress(
+            name = "Previous Year Questions",
+            completedPercent = .37f,
+            accuracyPercent = .85f,
+            questionsDone = 37,
+            questionsTotal = 100
+        ),
+        TopicProgress(
+            name = "General Tamil",
+            completedPercent = .37f,
+            accuracyPercent = .85f,
+            questionsDone = 37,
+            questionsTotal = 100
+        ),
+        TopicProgress(
+            name = "General Science",
+            completedPercent = .37f,
+            accuracyPercent = .85f,
+            questionsDone = 37,
+            questionsTotal = 100
+        ),
+        TopicProgress(
+            name = "Geography",
+            completedPercent = .37f,
+            accuracyPercent = .85f,
+            questionsDone = 37,
+            questionsTotal = 100
+        ),
+        TopicProgress(
+            name = "Indian History",
+            completedPercent = .37f,
+            accuracyPercent = .85f,
+            questionsDone = 37,
+            questionsTotal = 100
+        ),
+        TopicProgress(
+            name = "Indian Polity",
+            completedPercent = .37f,
+            accuracyPercent = .85f,
+            questionsDone = 37,
+            questionsTotal = 100
+        ),
+        TopicProgress(
+            name = "Indian Economy and Development",
+            completedPercent = .37f,
+            accuracyPercent = .85f,
+            questionsDone = 37,
+            questionsTotal = 100
+        ),
+        TopicProgress(
+            name = "Tamil Nadu History",
+            completedPercent = .37f,
+            accuracyPercent = .85f,
+            questionsDone = 37,
+            questionsTotal = 100
+        ),
+        TopicProgress(
+            name = "Aptitude",
+            completedPercent = .37f,
+            accuracyPercent = .85f,
+            questionsDone = 37,
+            questionsTotal = 100
+        )
+
+    )
+
+    const val HOME_ROUTE = "home?targetSection=header"
+    const val HOME_FROM_PROFILE_ROUTE = "home?targetSection=stickyHeader"
+    val currentAffairsCategories = listOf(
+        CACategoryModel(
+            category = "ca_daily",
+            emoji = "📰",
+            title = "Daily Current Affairs",
+            subTitle = "Check our daily current affairs with detailed explanations."
+        ),
+        CACategoryModel(
+            category = "ca_monthly",
+            emoji = "📅",
+            title = "Monthly Current Affairs",
+            subTitle = "Check our monthly current affairs with detailed explanations."
+        ),
+        CACategoryModel(
+            category = "ca_quiz",
+            emoji = "🏆",
+            title = "Current Affairs Quiz",
+            subTitle = "Take a quiz to test your knowledge of current affairs of Tamil Nadu and India"
+        ),
+    )
+
+    val challenge = DailyChallengeModel(
+        answer = 3,
+        explanation = "<p>In 2016, ISRO successfully launched 6 Indian operational satellites, including navigation satellites like IRNSS-1E, 1F, and 1G, Cartosat-2 Series, INSAT-3DR, and Resourcesat-2A.</p>\n",
+        explanationTamil = "<p>2016 ஆம் ஆண்டில், இஸ்ரோ (ISRO) வழிகாட்டு செயற்கைக்கோள்களான IRNSS-1E, 1F, 1G மற்றும் கார்டோசாட்-2, இன்சாட்-3DR, ரிசோர்சாட்-2A உட்பட மொத்தம் 6 இந்திய செயற்கைக்கோள்களை வெற்றிகரமாக விண்ணில் ஏவியது.</p>\n",
+        options = listOf("3", "4", "5", "6"),
+        optionsTamil = listOf("3", "4", "5", "6"),
+        question = "<p>During the year 2016, total number of Indian Satellites launched by ISRO is</p>\n",
+        questionTamil = "<p>2016 ஆம் ஆண்டில் ISRO-வால் விண்ணில் ஏவப்பட்ட இந்திய செயற்கைகோள்களின் எண்ணிக்கையானது</p>\n",
+    )
+    val dailyChallenge = listOf(
+        DailyChallengeModel(
+            answer = 3,
+            explanation = "<p>In 2016, ISRO successfully launched 6 Indian operational satellites, including navigation satellites like IRNSS-1E, 1F, and 1G, Cartosat-2 Series, INSAT-3DR, and Resourcesat-2A.</p>\n",
+            explanationTamil = "<p>2016 ஆம் ஆண்டில், இஸ்ரோ (ISRO) வழிகாட்டு செயற்கைக்கோள்களான IRNSS-1E, 1F, 1G மற்றும் கார்டோசாட்-2, இன்சாட்-3DR, ரிசோர்சாட்-2A உட்பட மொத்தம் 6 இந்திய செயற்கைக்கோள்களை வெற்றிகரமாக விண்ணில் ஏவியது.</p>\n",
+            options = listOf("3", "4", "5", "6"),
+            optionsTamil = listOf("3", "4", "5", "6"),
+            question = "<p>During the year 2016, total number of Indian Satellites launched by ISRO is</p>\n",
+            questionTamil = "<p>2016 ஆம் ஆண்டில் ISRO-வால் விண்ணில் ஏவப்பட்ட இந்திய செயற்கைகோள்களின் எண்ணிக்கையானது</p>\n",
+        ),
+        DailyChallengeModel(
+            answer = 3,
+            explanation = "<p>In 2016, ISRO successfully launched 6 Indian operational satellites, including navigation satellites like IRNSS-1E, 1F, and 1G, Cartosat-2 Series, INSAT-3DR, and Resourcesat-2A.</p>\n",
+            explanationTamil = "<p>2016 ஆம் ஆண்டில், இஸ்ரோ (ISRO) வழிகாட்டு செயற்கைக்கோள்களான IRNSS-1E, 1F, 1G மற்றும் கார்டோசாட்-2, இன்சாட்-3DR, ரிசோர்சாட்-2A உட்பட மொத்தம் 6 இந்திய செயற்கைக்கோள்களை வெற்றிகரமாக விண்ணில் ஏவியது.</p>\n",
+            options = listOf("3", "4", "5", "6"),
+            optionsTamil = listOf("3", "4", "5", "6"),
+            question = "<p>During the year 2016, total number of Indian Satellites launched by ISRO is</p>\n",
+            questionTamil = "<p>2016 ஆம் ஆண்டில் ISRO-வால் விண்ணில் ஏவப்பட்ட இந்திய செயற்கைகோள்களின் எண்ணிக்கையானது</p>\n",
+        ),
+        DailyChallengeModel(
+            answer = 3,
+            explanation = "<p>In 2016, ISRO successfully launched 6 Indian operational satellites, including navigation satellites like IRNSS-1E, 1F, and 1G, Cartosat-2 Series, INSAT-3DR, and Resourcesat-2A.</p>\n",
+            explanationTamil = "<p>2016 ஆம் ஆண்டில், இஸ்ரோ (ISRO) வழிகாட்டு செயற்கைக்கோள்களான IRNSS-1E, 1F, 1G மற்றும் கார்டோசாட்-2, இன்சாட்-3DR, ரிசோர்சாட்-2A உட்பட மொத்தம் 6 இந்திய செயற்கைக்கோள்களை வெற்றிகரமாக விண்ணில் ஏவியது.</p>\n",
+            options = listOf("3", "4", "5", "6"),
+            optionsTamil = listOf("3", "4", "5", "6"),
+            question = "<p>During the year 2016, total number of Indian Satellites launched by ISRO is</p>\n",
+            questionTamil = "<p>2016 ஆம் ஆண்டில் ISRO-வால் விண்ணில் ஏவப்பட்ட இந்திய செயற்கைகோள்களின் எண்ணிக்கையானது</p>\n",
+        ),
+        DailyChallengeModel(
+            answer = 3,
+            explanation = "<p>In 2016, ISRO successfully launched 6 Indian operational satellites, including navigation satellites like IRNSS-1E, 1F, and 1G, Cartosat-2 Series, INSAT-3DR, and Resourcesat-2A.</p>\n",
+            explanationTamil = "<p>2016 ஆம் ஆண்டில், இஸ்ரோ (ISRO) வழிகாட்டு செயற்கைக்கோள்களான IRNSS-1E, 1F, 1G மற்றும் கார்டோசாட்-2, இன்சாட்-3DR, ரிசோர்சாட்-2A உட்பட மொத்தம் 6 இந்திய செயற்கைக்கோள்களை வெற்றிகரமாக விண்ணில் ஏவியது.</p>\n",
+            options = listOf("3", "4", "5", "6"),
+            optionsTamil = listOf("3", "4", "5", "6"),
+            question = "<p>During the year 2016, total number of Indian Satellites launched by ISRO is</p>\n",
+            questionTamil = "<p>2016 ஆம் ஆண்டில் ISRO-வால் விண்ணில் ஏவப்பட்ட இந்திய செயற்கைகோள்களின் எண்ணிக்கையானது</p>\n",
+        ),
+        DailyChallengeModel(
+            answer = 3,
+            explanation = "<p>In 2016, ISRO successfully launched 6 Indian operational satellites, including navigation satellites like IRNSS-1E, 1F, and 1G, Cartosat-2 Series, INSAT-3DR, and Resourcesat-2A.</p>\n",
+            explanationTamil = "<p>2016 ஆம் ஆண்டில், இஸ்ரோ (ISRO) வழிகாட்டு செயற்கைக்கோள்களான IRNSS-1E, 1F, 1G மற்றும் கார்டோசாட்-2, இன்சாட்-3DR, ரிசோர்சாட்-2A உட்பட மொத்தம் 6 இந்திய செயற்கைக்கோள்களை வெற்றிகரமாக விண்ணில் ஏவியது.</p>\n",
+            options = listOf("3", "4", "5", "6"),
+            optionsTamil = listOf("3", "4", "5", "6"),
+            question = "<p>During the year 2016, total number of Indian Satellites launched by ISRO is</p>\n",
+            questionTamil = "<p>2016 ஆம் ஆண்டில் ISRO-வால் விண்ணில் ஏவப்பட்ட இந்திய செயற்கைகோள்களின் எண்ணிக்கையானது</p>\n",
+        ),
+        DailyChallengeModel(
+            answer = 3,
+            explanation = "<p>In 2016, ISRO successfully launched 6 Indian operational satellites, including navigation satellites like IRNSS-1E, 1F, and 1G, Cartosat-2 Series, INSAT-3DR, and Resourcesat-2A.</p>\n",
+            explanationTamil = "<p>2016 ஆம் ஆண்டில், இஸ்ரோ (ISRO) வழிகாட்டு செயற்கைக்கோள்களான IRNSS-1E, 1F, 1G மற்றும் கார்டோசாட்-2, இன்சாட்-3DR, ரிசோர்சாட்-2A உட்பட மொத்தம் 6 இந்திய செயற்கைக்கோள்களை வெற்றிகரமாக விண்ணில் ஏவியது.</p>\n",
+            options = listOf("3", "4", "5", "6"),
+            optionsTamil = listOf("3", "4", "5", "6"),
+            question = "<p>During the year 2016, total number of Indian Satellites launched by ISRO is</p>\n",
+            questionTamil = "<p>2016 ஆம் ஆண்டில் ISRO-வால் விண்ணில் ஏவப்பட்ட இந்திய செயற்கைகோள்களின் எண்ணிக்கையானது</p>\n",
+        ),
+        DailyChallengeModel(
+            answer = 3,
+            explanation = "<p>In 2016, ISRO successfully launched 6 Indian operational satellites, including navigation satellites like IRNSS-1E, 1F, and 1G, Cartosat-2 Series, INSAT-3DR, and Resourcesat-2A.</p>\n",
+            explanationTamil = "<p>2016 ஆம் ஆண்டில், இஸ்ரோ (ISRO) வழிகாட்டு செயற்கைக்கோள்களான IRNSS-1E, 1F, 1G மற்றும் கார்டோசாட்-2, இன்சாட்-3DR, ரிசோர்சாட்-2A உட்பட மொத்தம் 6 இந்திய செயற்கைக்கோள்களை வெற்றிகரமாக விண்ணில் ஏவியது.</p>\n",
+            options = listOf("3", "4", "5", "6"),
+            optionsTamil = listOf("3", "4", "5", "6"),
+            question = "<p>During the year 2016, total number of Indian Satellites launched by ISRO is</p>\n",
+            questionTamil = "<p>2016 ஆம் ஆண்டில் ISRO-வால் விண்ணில் ஏவப்பட்ட இந்திய செயற்கைகோள்களின் எண்ணிக்கையானது</p>\n",
+        ),
+        DailyChallengeModel(
+            answer = 3,
+            explanation = "<p>In 2016, ISRO successfully launched 6 Indian operational satellites, including navigation satellites like IRNSS-1E, 1F, and 1G, Cartosat-2 Series, INSAT-3DR, and Resourcesat-2A.</p>\n",
+            explanationTamil = "<p>2016 ஆம் ஆண்டில், இஸ்ரோ (ISRO) வழிகாட்டு செயற்கைக்கோள்களான IRNSS-1E, 1F, 1G மற்றும் கார்டோசாட்-2, இன்சாட்-3DR, ரிசோர்சாட்-2A உட்பட மொத்தம் 6 இந்திய செயற்கைக்கோள்களை வெற்றிகரமாக விண்ணில் ஏவியது.</p>\n",
+            options = listOf("3", "4", "5", "6"),
+            optionsTamil = listOf("3", "4", "5", "6"),
+            question = "<p>During the year 2016, total number of Indian Satellites launched by ISRO is</p>\n",
+            questionTamil = "<p>2016 ஆம் ஆண்டில் ISRO-வால் விண்ணில் ஏவப்பட்ட இந்திய செயற்கைகோள்களின் எண்ணிக்கையானது</p>\n",
+        ),
+        DailyChallengeModel(
+            answer = 3,
+            explanation = "<p>In 2016, ISRO successfully launched 6 Indian operational satellites, including navigation satellites like IRNSS-1E, 1F, and 1G, Cartosat-2 Series, INSAT-3DR, and Resourcesat-2A.</p>\n",
+            explanationTamil = "<p>2016 ஆம் ஆண்டில், இஸ்ரோ (ISRO) வழிகாட்டு செயற்கைக்கோள்களான IRNSS-1E, 1F, 1G மற்றும் கார்டோசாட்-2, இன்சாட்-3DR, ரிசோர்சாட்-2A உட்பட மொத்தம் 6 இந்திய செயற்கைக்கோள்களை வெற்றிகரமாக விண்ணில் ஏவியது.</p>\n",
+            options = listOf("3", "4", "5", "6"),
+            optionsTamil = listOf("3", "4", "5", "6"),
+            question = "<p>During the year 2016, total number of Indian Satellites launched by ISRO is</p>\n",
+            questionTamil = "<p>2016 ஆம் ஆண்டில் ISRO-வால் விண்ணில் ஏவப்பட்ட இந்திய செயற்கைகோள்களின் எண்ணிக்கையானது</p>\n",
+        ),
+        DailyChallengeModel(
+            answer = 3,
+            explanation = "<p>In 2016, ISRO successfully launched 6 Indian operational satellites, including navigation satellites like IRNSS-1E, 1F, and 1G, Cartosat-2 Series, INSAT-3DR, and Resourcesat-2A.</p>\n",
+            explanationTamil = "<p>2016 ஆம் ஆண்டில், இஸ்ரோ (ISRO) வழிகாட்டு செயற்கைக்கோள்களான IRNSS-1E, 1F, 1G மற்றும் கார்டோசாட்-2, இன்சாட்-3DR, ரிசோர்சாட்-2A உட்பட மொத்தம் 6 இந்திய செயற்கைக்கோள்களை வெற்றிகரமாக விண்ணில் ஏவியது.</p>\n",
+            options = listOf("3", "4", "5", "6"),
+            optionsTamil = listOf("3", "4", "5", "6"),
+            question = "<p>During the year 2016, total number of Indian Satellites launched by ISRO is</p>\n",
+            questionTamil = "<p>2016 ஆம் ஆண்டில் ISRO-வால் விண்ணில் ஏவப்பட்ட இந்திய செயற்கைகோள்களின் எண்ணிக்கையானது</p>\n",
+        ),
+
+    )
 }
