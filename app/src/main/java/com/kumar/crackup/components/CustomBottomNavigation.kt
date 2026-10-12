@@ -7,15 +7,11 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -24,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import com.kumar.crackup.home.HomeNav
 import com.kumar.crackup.states.BottomItem
 import com.kumar.crackup.templates.BodyText
 import com.kumar.crackup.ui.theme.bodyFontTinySize
@@ -33,6 +30,7 @@ import com.kumar.crackup.util.topShadow
 
 @Composable
 fun CustomBottomNavigation(
+    currentRoute: String,
     onNavigate: (String) -> Unit
 ) {
 
@@ -61,7 +59,7 @@ fun CustomBottomNavigation(
             screens.forEach {
                 NavItem(
                     it,
-                    clickedRoute.value
+                    currentRoute
                 ) { route ->
                     clickedRoute.value = route
                     onNavigate(route)
@@ -82,18 +80,32 @@ fun NavItem(
             modifier = Modifier
                 .size(48.dp)
                 .background(
-                    if (item.route == clickedRoute) lightBlue else Color.White.copy(alpha = 0.8f),
+                    when {
+                        item.route is HomeNav && item.route.route == clickedRoute -> lightBlue
+                        item.route is String && item.route == clickedRoute -> lightBlue
+                        else -> Color.White.copy(alpha = 0.8f)
+                    },
+//                    if (item.route == clickedRoute) lightBlue else Color.White.copy(alpha = 0.8f),
                     shape = CircleShape
                 )
                 .clickable {
-                    onNavigate(item.route)
+                    when {
+                        item.route is HomeNav -> onNavigate(item.route.route)
+                        item.route is String -> onNavigate(item.route)
+                    }
+//                    onNavigate(item.route)
                 }, contentAlignment = Alignment.Center
         ) {
             Icon(
                 painter = painterResource(item.icon),
                 contentDescription = null,
                 modifier = Modifier.size(24.dp),
-                tint = if (item.route == clickedRoute) Color.White else textBlack
+                tint = when {
+                    item.route is HomeNav && item.route.route == clickedRoute -> Color.White
+                    item.route is String && item.route == clickedRoute -> Color.White
+                    else -> textBlack
+                }
+//                    if (item.route == clickedRoute) Color.White else textBlack
             )
         }
         BodyText(text = item.name,

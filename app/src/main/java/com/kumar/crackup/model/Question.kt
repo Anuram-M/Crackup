@@ -1,6 +1,5 @@
 package com.kumar.crackup.model
 
-import com.google.firebase.Timestamp
 import kotlinx.serialization.Serializable
 
 @Serializable

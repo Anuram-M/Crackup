@@ -5,20 +5,19 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableLongStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import com.kumar.crackup.R
 import com.kumar.crackup.templates.BodyText
@@ -26,11 +25,13 @@ import com.kumar.crackup.templates.SmallWidthSpacer
 import com.kumar.crackup.ui.theme.bodyFontSize
 import com.kumar.crackup.ui.theme.lightBlue
 import kotlinx.coroutines.delay
-import kotlinx.serialization.StringFormat
 
 @Composable
 fun TimerComponent(
+    iconSize: Dp = 16.dp,
+    fontSize: TextUnit = bodyFontSize,
     totalSeconds: Long,
+    elapsedSeconds: (Long) -> Unit,
     onFinished: () -> Unit
 ) {
     var timeLeft by remember { mutableLongStateOf(totalSeconds) }
@@ -57,11 +58,11 @@ fun TimerComponent(
             Icon(
                 painter = painterResource(R.drawable.clock),
                 contentDescription = null,
-                modifier = Modifier.size(16.dp),
+                modifier = Modifier.size(iconSize),
                 tint = contentColor
             )
             SmallWidthSpacer()
-            BodyText(text = time, textColor = contentColor, textSize = bodyFontSize)
+            BodyText(text = time, textColor = contentColor, textSize = fontSize)
         }
 
     }

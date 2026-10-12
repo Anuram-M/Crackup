@@ -23,6 +23,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "BaseApp"
+rootProject.name = "CrackUp"
 include(":app")
  
