@@ -11,5 +11,9 @@ data class UserModel(
     val generalTamil: Boolean?,
     val generalStudies: Boolean?,
     val aptitude: Boolean?,
-    val fullPackage: Boolean?
+    val fullPackage: Boolean?,
+    val currentStreak: Int?,
+    val longestStreak: Int?,
+    val lastStreakDate: String?,
+    val activeDates: List<String>
 )
