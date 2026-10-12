@@ -1,6 +1,8 @@
 package com.kumar.crackup.util
 
+import com.kumar.crackup.dailyChallenge.DailyChallengeModel
 import com.kumar.crackup.model.NewQuestion
+import kotlinx.serialization.Serializable
 
 // ============================================================
 // DATA MODELS
@@ -15,6 +17,7 @@ import com.kumar.crackup.model.NewQuestion
  * NOT affect whether the answer counts during evaluation. Any selected
  * answer counts, marked or not.
  */
+@Serializable
 data class QuestionAnswerState(
     val selectedOptionIndex: Int? = null,
     val isMarkedForReview: Boolean = false
@@ -31,7 +34,8 @@ data class QuizResult(
     val correct: Int,
     val incorrect: Int,
     val unanswered: Int,
-    val accuracyAmongAttempted: Float // 0..100, based only on attempted questions
+    val accuracyAmongAttempted: Float, // 0..100, based only on attempted questions,
+    val attemptedQuestiondIds: List<String> = emptyList()
 ) {
     /** e.g. "18/24" — score expressed against the full question count. */
     val scoreLabel: String get() = "$correct/$totalQuestions"
@@ -56,6 +60,43 @@ object TestEvaluator {
         val total = questions.size
         var correct = 0
         var attempted = 0
+        var attemptedQuestionIds: MutableList<String> = mutableListOf()
+
+        questions.forEachIndexed { index, question ->
+            val selected = answers[index]?.selectedOptionIndex
+            if (selected != null) {
+                attemptedQuestionIds.add(generateQuestionId(question))
+                attempted++
+                if (selected == question.answer) correct++
+            }
+        }
+
+        val incorrect = attempted - correct
+        val unanswered = total - attempted
+        val accuracy = if (attempted > 0) (correct.toFloat() / attempted) * 100f else 0f
+
+        return QuizResult(
+            totalQuestions = total,
+            attempted = attempted,
+            correct = correct,
+            incorrect = incorrect,
+            unanswered = unanswered,
+            accuracyAmongAttempted = accuracy,
+            attemptedQuestiondIds = attemptedQuestionIds.toList()
+        )
+    }
+
+    fun generateQuestionId(newQuestion: NewQuestion) : String {
+        return "${newQuestion.mainTopic}_${newQuestion.subtopic}_${newQuestion.subCollection}_q${newQuestion.qno}"
+    }
+
+    fun evaluateDailyChallenge(
+        questions: List<DailyChallengeModel>,
+        answers: Map<Int, QuestionAnswerState> // keyed by question index, not id
+    ): QuizResult {
+        val total = questions.size
+        var correct = 0
+        var attempted = 0
 
         questions.forEachIndexed { index, question ->
             val selected = answers[index]?.selectedOptionIndex
@@ -75,7 +116,7 @@ object TestEvaluator {
             correct = correct,
             incorrect = incorrect,
             unanswered = unanswered,
-            accuracyAmongAttempted = accuracy
+            accuracyAmongAttempted = accuracy,
         )
     }
 }

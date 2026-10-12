@@ -9,6 +9,7 @@ data class Topic(
     val type: TopicType = TopicType.SUB_TOPIC,
     val topicQuery: String = "",
     val order: Int = 0,
+    val totalQuestions: Int = 0
 )
 data class TamilUnit(
     val id: String = "1",
