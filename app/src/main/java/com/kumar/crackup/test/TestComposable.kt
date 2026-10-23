@@ -95,8 +95,6 @@ fun Test( navHostController: NavHostController, myViewModel: MyViewModel) {
     val isEnglish by myViewModel.isEng.collectAsStateWithLifecycle()
     val questions by myViewModel.questions.collectAsStateWithLifecycle()
 
-    Log.d("QUERRYM", "Test: ${questions.size}, ${questions[0]}")
-
     TestComposable(
         viewModel = myViewModel,
         isEnglish = isEnglish,
@@ -130,7 +128,6 @@ fun TestComposable(
             submitAttempt = { attempt ->
                 var model = attempt
                 model = model.copy(setCategory = query.subTopic, solvedQuestionsIds = submittedResult.attemptedQuestiondIds)
-                Log.d("ERROR", "TestComposable: ${model}, total ${viewModel.globalTotal.value}")
                 viewModel.addAttempt(model, query.parentName, query.totalQuestions, viewModel.globalTotal.value)
             },
             onExit = onExit,
@@ -149,7 +146,6 @@ fun TestComposable(
             currentIndex = currentIndex,
             answers = answers,
             onIndexChange = { currentIndex = it },
-            onPremiumClick = { Toast.makeText(context, "This is Premium, subscribe to access premium content!", Toast.LENGTH_SHORT ).show()},
             onSelectOption = { questionIndex, optionIndex ->
                 val existing = answers[questionIndex] ?: QuestionAnswerState()
                 // Changing the selection clears any previous "final" lock —
@@ -168,9 +164,7 @@ fun TestComposable(
 
             },
             onToggleMarkFinal = { questionIndex ->
-//                val existing = answers[questionIndex]
                 val existing = answers[questionIndex] ?: QuestionAnswerState()
-//                if (existing?.selectedOptionIndex != null) {
                 existing?.let {
                     answers[questionIndex] = existing.copy(isMarkedForReview = !existing.isMarkedForReview)
                 }
@@ -222,14 +216,12 @@ private fun QuizScreen(
     currentIndex: Int,
     answers: Map<Int, QuestionAnswerState>,
     onIndexChange: (Int) -> Unit,
-    onPremiumClick: () -> Unit,
     onSelectOption: (questionIndex: Int, optionIndex: Int) -> Unit,
     onToggleMarkFinal: (questionIndex: Int) -> Unit,
     onSubmit: (Boolean) -> Unit,
     onResetOption: (questionIndex: Int) -> Unit
 ) {
     val question = questions[currentIndex]
-//    val state = answers[currentIndex] ?: QuestionAnswerState()
     val state by remember(currentIndex) {
         derivedStateOf { answers[currentIndex] ?: QuestionAnswerState() }
     }
@@ -242,12 +234,7 @@ private fun QuizScreen(
     val sheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = false
     )
-    var showPaySheet by remember {
-        mutableStateOf(false)
-    }
-    val paySheetState = rememberModalBottomSheetState(
-        skipPartiallyExpanded = true
-    )
+
     val coroutineScope = rememberCoroutineScope()
     val answeredCount = answers.values.count { it.selectedOptionIndex != null }
     val markedCount = answers.values.count { it.isMarkedForReview }
@@ -374,12 +361,8 @@ private fun QuizScreen(
                 .padding(start = 20.dp, end = 20.dp, bottom = 20.dp, top = 10.dp)
                 .verticalScroll(scrollState)
         ) {
-            Log.d("PASSECDATAB", "QuizScreen: ${question}")
-
             val questionText = convertText(question, isEnglish)
-//            KMathText(text = question.question, textColor = textBlack)
             NativeMathText(content = questionText, fontWeight = FontWeight.SemiBold, color = textBlack)
-//            BodyText(isHtmlText = true, text = "Q. ${questionText}", textSize = bodyFontSize, fontWeight = FontWeight.SemiBold, textColor = textBlack, modifier = Modifier)
             HeightSpacer()
             if(isEnglish) {
                 question.options.forEachIndexed { optionIndex, optionText ->
@@ -413,7 +396,6 @@ private fun QuizScreen(
 
             if(showAnswer)
             NativeMathText(content = "Explanation: \n ${explaination}", fontWeight = FontWeight.SemiBold, color = textBlack)
-//            BodyText(isHtmlText = true, text = "Explanation: \n ${explaination}", fontWeight = FontWeight.SemiBold)
 
 
             SmallHeightSpacer()
@@ -463,29 +445,11 @@ private fun QuizScreen(
                 enabled = currentIndex < 9,
                 colors = ButtonDefaults.buttonColors(containerColor = lightBlue, disabledContainerColor = Color.Gray),
                 onClick = {
-                    if (!isLast && currentIndex < 9) onIndexChange(currentIndex + 1) else showPaySheet = true
+                    onIndexChange(currentIndex + 1)
                 }
             ) {
                 Text("Next >", color = Color.White, fontFamily = bodyFont)
-//                BodyText(
-//                    modifier = Modifier.padding(horizontal = 15.dp, vertical = 10.dp),
-//                    text = "Next >",
-//                    textColor = Color.White,
-//                )
             }
-//            OutlineContainer(
-//                isEnabled = currentIndex < 9,
-//                contentColor = lightBlue,
-//                backgroundColor = lightBlue,
-//                onclicK = {
-//                    if (!isLast && currentIndex < 9) onIndexChange(currentIndex + 1) else showPaySheet = true
-//                }) {
-//                BodyText(
-//                    modifier = Modifier.padding(horizontal = 15.dp, vertical = 10.dp),
-//                    text = "Next >",
-//                    textColor = Color.White,
-//                )
-//            }
         }
     }
     if(showSheet) {
@@ -501,7 +465,6 @@ private fun QuizScreen(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-//                    .height(150.dp)
                     .background(screenBackground)
                     .safeContentPadding()
             ) {
@@ -537,6 +500,7 @@ private fun QuizScreen(
                     FlowRow(
                         modifier = Modifier
                             .fillMaxWidth()
+                            .weight(1f, fill = false)
                             .verticalScroll(rememberScrollState())
                             .padding(20.dp),
                         horizontalArrangement = Arrangement.SpaceAround,
@@ -548,65 +512,11 @@ private fun QuizScreen(
                                 number = index + 1,
                                 isCurrent = index == currentIndex,
                                 state = answers[index],
-                                isPremium = item.premium,
-                                onClick = { if(!item.premium) onIndexChange(index) else showPaySheet = true }
+                                onClick = { onIndexChange(index) }
                             )
                         }
                     }
                 }
-
-            }
-        }
-    }
-    if(showPaySheet) {
-        BottomSheet(sheetState = paySheetState, onClose = {
-            coroutineScope.launch {
-                paySheetState.hide()
-            }.invokeOnCompletion {
-                if (!paySheetState.isVisible) {
-                    showPaySheet = false
-                }
-            }
-        }) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-//                    .height(150.dp)
-                    .background(screenBackground)
-                    .safeContentPadding()
-            ) {
-                Column(modifier = Modifier.padding(horizontal = 5.dp, vertical = 10.dp)) {
-
-                    PayPackageCard(currentPack =  currentServiceModel,
-                        bestPack = AppContentUtil.servicesList[0] ,
-                        onCurrentPackSelected = {
-
-                        },
-                        onBestPackSelected = {
-
-                        })
-
-                    TextButton(
-                        modifier = Modifier.fillMaxWidth(),
-                        onClick = {
-                            coroutineScope.launch {
-                                paySheetState.hide()
-                            }.invokeOnCompletion {
-                                if (!paySheetState.isVisible) {
-                                    showPaySheet = false
-                                }
-                            }
-                        }) {
-                        BodyText(
-                            text = "Cancel",
-                            textColor = Color.Red,
-                            fontWeight = FontWeight.SemiBold,
-                            textSize = bodyFontLargeSize
-                        )
-                    }
-
-                }
-
             }
         }
     }
@@ -648,11 +558,9 @@ fun OptionRow(
             .clickable { if (!showAnswer) onClick() }
             .padding(end = 10.dp)
     ) {
-//        RadioButton(selected = isSelected, onClick = onClick, colors = RadioButtonDefaults.colors(selectedColor = borderColor, unselectedColor = Color.Gray))
         SelectorTextRadioButton(isSelected = isSelected, selectorText = index, selectedColor = borderColor, unselectedColor = Color.Gray, onSelected = onClick)
         SmallWidthSpacer()
         NativeMathText(content = text, fontWeight = FontWeight.Normal, color = textBlack)
-//        BodyText(isHtmlText = true,text = text, textSize = bodyFontSize, modifier = Modifier.weight(1f))
         if (isMarkedForReview) {
             BodyText(text = "REVIEW LATER", textSize = bodyFontTinySize, fontWeight = FontWeight.Bold, textColor = borderColor, modifier = Modifier)
         }
@@ -663,7 +571,6 @@ fun OptionRow(
 private fun QuestionPaletteChip(
     number: Int,
     isCurrent: Boolean,
-    isPremium: Boolean,
     state: QuestionAnswerState?,
     onClick: () -> Unit
 ) {
@@ -682,7 +589,6 @@ private fun QuestionPaletteChip(
             contentAlignment = Alignment.Center,
             modifier = Modifier
                 .size(if (isCurrent) 36.dp else 40.dp)
-//                .shadow(elevation = if (isCurrent) 4.dp else 0.dp, shape = CircleShape)
                 .clip(CircleShape)
                 .background(bg)
                 .then(
@@ -692,16 +598,12 @@ private fun QuestionPaletteChip(
                 .clickable { onClick() }
         ) {
             BodyText(
-                text = if(isPremium) "🔒" else number.toString(),
+                text = number.toString(),
                 textSize = bodyFontSmallSize,
                 fontWeight = FontWeight.SemiBold,
                 textColor = textColor,
             )
         }
-
-//        if(isCurrent) {
-//            Box(modifier = Modifier.padding(top = 2.dp).size(3.dp).background(bg, shape = CircleShape)) { }
-//        }
     }
 }
 
@@ -713,14 +615,12 @@ private fun QuizResultScreen(
     onReview: () -> Unit
 ) {
     LaunchedEffect(Unit) {
-        Log.d("ERROR", "QuizResultScreen: ${result}")
         val attemptModel = AttemptModel(
             attemptedCount = result.attempted,
             correctCount = result.correct,
             setCategory = "",
             accuracy = (result.correct/result.attempted).toFloat()
         )
-        Log.d("ERROR", "QuizResultScreen: ${attemptModel}")
         submitAttempt(attemptModel)
     }
     Column(

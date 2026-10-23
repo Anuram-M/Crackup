@@ -53,7 +53,7 @@ fun FaqComposable() {
         Column(modifier = Modifier.fillMaxSize().padding(vertical = 20.dp)) {
 
             Image(painter = painterResource(R.drawable.question), contentDescription = null, modifier = Modifier.fillMaxWidth().heightIn(min = 120.dp), contentScale = ContentScale.FillHeight)
-            LazyColumn() {
+            LazyColumn(modifier = Modifier.weight(1f)) {
                 items(qaItems) { item ->
                     ExpandableQACard(
                         Color.White,

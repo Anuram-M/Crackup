@@ -20,7 +20,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
-import com.kumar.crackup.components.FreeTestGuidanceCard
 import com.kumar.crackup.model.TopicType
 import com.kumar.crackup.templates.HeaderText
 import com.kumar.crackup.templates.SubHeaderText
@@ -32,7 +31,7 @@ fun SyllabusSection(navHostController: NavHostController, viewModel: MyViewModel
 
     val topics by viewModel.topic.collectAsStateWithLifecycle()
     val isEnglish by viewModel.isEng.collectAsStateWithLifecycle()
-    val scrollState =  rememberScrollState()
+    val scrollState = rememberScrollState()
     LaunchedEffect(Unit) {
         scrollState.scrollTo(0)
     }
@@ -44,57 +43,51 @@ fun SyllabusSection(navHostController: NavHostController, viewModel: MyViewModel
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .verticalScroll(scrollState)
         ) {
             HeaderText(text = "TNPSC Syllabus & Practice", modifier = Modifier)
-            Card(modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 10.dp), colors = CardDefaults.cardColors(containerColor = Color.White),
-                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)) {
-                Column(modifier = Modifier
+            Card(
+                modifier = Modifier
                     .fillMaxWidth()
-                    .padding(10.dp)) {
-                    Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
+                    .padding(vertical = 10.dp),
+                colors = CardDefaults.cardColors(containerColor = Color.White),
+                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(10.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
 
                         SubHeaderText(text = "Practice MCQs", modifier = Modifier)
-                         LanguageSwitch(
-     isEnglish = isEnglish,
-     onToggle = { viewModel.changeLanguage(it) }
- )
+                        LanguageSwitch(
+                            isEnglish = isEnglish,
+                            onToggle = { viewModel.changeLanguage(it) }
+                        )
                     }
                     topics.forEach {
                         SyllabusCard(syllabusTopic = it, isEnglish) {
-                            viewModel.topicSelected(it, onNavToExam = {
-                                Log.d("NAVCt", "SyllabusSection: ${TopicType.EXAM_YEAR}")
-                                navHostController.navigate("EXAM_YEAR")
-                            },
+                            viewModel.topicSelected(
+                                it,
+                                onNavToExam = {
+                                    Log.d("NAVCt", "SyllabusSection: ${TopicType.EXAM_YEAR}")
+                                    navHostController.navigate("EXAM_YEAR")
+                                },
                                 onNavToSubTopic = {
-                                 navHostController.navigate("subTopics")
+                                    navHostController.navigate("subTopics")
                                 },
                                 onNavTamilUnits = {
                                     navHostController.navigate("Units")
-                                })
-//                            navHostController.navigate(it.type)
+                                },
+                            )
                         }
                     }
                 }
             }
-
-            //needs to be removed for initial release
-//            Card(modifier = Modifier
-//                .fillMaxWidth()
-//                .padding(vertical = 10.dp), colors = CardDefaults.cardColors(containerColor = Color.White),
-//                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)) {
-//                Row(
-//                    modifier = Modifier
-//                        .fillMaxWidth()
-//                        .padding(horizontal = 10.dp, vertical = 20.dp)
-//                ) {
-//                    HeaderText(text = "🏆 MOCK TESTS (⭐ Premium)", modifier = Modifier)
-//                }
-//            }
-//
-//            FreeTestGuidanceCard()
         }
     }
 }

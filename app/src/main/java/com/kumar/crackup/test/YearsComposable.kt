@@ -8,6 +8,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import com.kumar.crackup.components.NoContentDialog
@@ -24,7 +25,7 @@ fun YearsComposable(navController: NavHostController, viewModel: MyViewModel) {
     var emptyTopic by remember { mutableStateOf<String?>(null) }
     ScreenScaffold(title = "Select Year") {
         val years = exam?.availableYears.orEmpty()
-        SelectionList(items = years.map { it.toString() to it }) { exam ->
+        SelectionList(items = years.map { it.toString() to it }, modifier = Modifier.weight(1f)) { exam ->
 //            viewModel.onExamSelected(exam) // no fetch — availableYears already embedded
             viewModel.onYearSelected(exam.toString(), {
                 Log.d("QUERRYM", "SubTopicsScreen: ${viewModel.query.value}")

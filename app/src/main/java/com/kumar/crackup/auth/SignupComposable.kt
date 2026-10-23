@@ -22,9 +22,11 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -36,6 +38,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -47,6 +50,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
+import com.kumar.crackup.R
+import com.kumar.crackup.home.Login
+import com.kumar.crackup.privacyPolicy.PrivacyPolicyComposable
+import com.kumar.crackup.privacyPolicy.PrivacyPolicyContent
+import com.kumar.crackup.templates.BodyText
 import com.kumar.crackup.templates.DropDownSelector
 import com.kumar.crackup.templates.GradientButton
 import com.kumar.crackup.templates.OutlinedInputField
@@ -56,6 +64,7 @@ import com.kumar.crackup.ui.theme.bodyFontSize
 import com.kumar.crackup.ui.theme.bodyFontSmallSize
 import com.kumar.crackup.ui.theme.lightBlue
 import com.kumar.crackup.ui.theme.linearGradient2
+import com.kumar.crackup.ui.theme.textBlack
 import com.kumar.crackup.ui.theme.textBlue
 import com.kumar.crackup.util.PasswordStrength
 import com.kumar.crackup.util.PreferenceUtil
@@ -88,10 +97,8 @@ fun SignupComposable(navHostController: NavHostController, myViewModel: MyViewMo
         .fillMaxWidth()
         .padding(horizontal = 10.dp)
 
-    val showPassword = remember {
-
-        mutableStateOf(false)
-    }
+    val showPassword = remember { mutableStateOf(false) }
+    val showPolicy = remember { mutableStateOf(false) }
     val showConfirmPassword = remember {
 
         mutableStateOf(false)
@@ -411,6 +418,21 @@ fun SignupComposable(navHostController: NavHostController, myViewModel: MyViewMo
                     )
                 )
 
+                TextButton(
+                        modifier = Modifier.fillMaxWidth(),
+                onClick = {
+                    showPolicy.value = true
+                }
+                ) {
+                BodyText(
+                    text = "Privacy Policy",
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.Center,
+                    textColor = lightBlue,
+                    textSize = bodyFontSmallSize
+                )
+            }
+
                 GradientButton(
                     buttonText = "Create Account",
                     gradientColors = linearGradient2,
@@ -446,7 +468,7 @@ fun SignupComposable(navHostController: NavHostController, myViewModel: MyViewMo
                         modifier = Modifier
                             .padding(end = 10.dp)
                             .clickable {
-                                navHostController.navigate("login") {
+                                navHostController.navigate(Login) {
                                     popUpTo(0)
                                 }
                             },
@@ -455,6 +477,41 @@ fun SignupComposable(navHostController: NavHostController, myViewModel: MyViewMo
             }
 
 
+        }
+        if(showPolicy.value) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(textBlack.copy(alpha = 0.4f))
+                    .padding(20.dp),
+            ) {
+                Card(modifier = Modifier.fillMaxSize(),
+                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 10.dp)) {
+                    PrivacyPolicyContent()
+                }
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                ) {
+                    IconButton(
+                        onClick = {
+                            showPolicy.value = false
+                        },
+                        modifier = Modifier.align(Alignment.TopEnd).size(30.dp)
+                    ) {
+
+                        Icon(
+                            painter = painterResource(R.drawable.close2),
+                            contentDescription = null,
+                            tint = Color.Black,
+                            modifier = Modifier
+                                .size(20.dp)
+
+                        )
+                    }
+                }
+            }
         }
     }
 }

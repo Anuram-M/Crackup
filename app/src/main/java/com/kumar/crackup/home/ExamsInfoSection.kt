@@ -125,7 +125,6 @@ fun ExamsInfoSection() {
         modifier = Modifier
             .fillMaxWidth()
             .padding(10.dp)
-            .verticalScroll(scrollState)
     ) {
         Column() {
             HeaderText(text = "India's Major Competitive Exam Gateways", modifier = Modifier

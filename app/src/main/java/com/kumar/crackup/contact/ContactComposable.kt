@@ -40,6 +40,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.kumar.crackup.AppConstants
 import com.kumar.crackup.R
 import com.kumar.crackup.templates.GradientButton
 import com.kumar.crackup.templates.OutlinedInputField
@@ -52,38 +53,47 @@ import com.kumar.crackup.ui.theme.linearGradient2
 import java.net.URLEncoder
 
 fun goTo(context: Context, option: Int) {
-    when(option) {
-        1 -> {try {
-            val intent = Intent(Intent.ACTION_DIAL).apply {
-                data = Uri.parse("tel:9361776015")
-            }
-            context.startActivity(intent)
-        }catch (e: Exception) {
+    when (option) {
+        1 -> {
+            try {
+                val intent = Intent(Intent.ACTION_DIAL).apply {
+                    data = Uri.parse("tel:${AppConstants.phoneNum}")
+                }
+                context.startActivity(intent)
+            } catch (e: Exception) {
 
-        }}
-        2 -> {try {
-            val link = "https://api.whatsapp.com/send?phone=9361776015"
-            val intent = Intent(Intent.ACTION_VIEW).apply {
-                data = Uri.parse(link)
             }
-            context.startActivity(intent)
-        } catch (e: Exception) {
-            Log.d("ERROR", "sendMessage: ${e.message}")
-        }}
-        3 -> {try {
-            val intent = Intent(Intent.ACTION_SENDTO).apply {
-                data = Uri.parse("mailto:support@crackupacademy.in")
-            }
-            context.startActivity(intent)
-        }catch (e: Exception) {
+        }
 
-        }}
+        2 -> {
+            try {
+                val link = "https://api.whatsapp.com/send?phone=${AppConstants.phoneNum}"
+                val intent = Intent(Intent.ACTION_VIEW).apply {
+                    data = Uri.parse(link)
+                }
+                context.startActivity(intent)
+            } catch (e: Exception) {
+                Log.d("ERROR", "sendMessage: ${e.message}")
+            }
+        }
+
+        3 -> {
+            try {
+                val intent = Intent(Intent.ACTION_SENDTO).apply {
+                    data = Uri.parse("mailto:${AppConstants.emailId}")
+                }
+                context.startActivity(intent)
+            } catch (e: Exception) {
+
+            }
+        }
     }
 }
+
 fun sendMessage(context: Context, textMessage: String) {
     try {
         val encodedMessage = URLEncoder.encode(textMessage, "UTF-8")
-        val link = "https://api.whatsapp.com/send?phone=9876543210&text=$encodedMessage"
+        val link = "https://api.whatsapp.com/send?phone=${AppConstants.phoneNum}&text=$encodedMessage"
         val intent = Intent(Intent.ACTION_VIEW).apply {
             data = Uri.parse(link)
         }
@@ -134,12 +144,16 @@ fun ContactComposable() {
                     .fillMaxWidth()
                     .padding(10.dp)
             )
-            Spacer(modifier = Modifier
-                .fillMaxWidth()
-                .height(14.dp))
-            Row(modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 20.dp), horizontalArrangement = Arrangement.Center) {
+            Spacer(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(14.dp)
+            )
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp), horizontalArrangement = Arrangement.Center
+            ) {
 
                 Text(
                     text = "Phone",
@@ -150,11 +164,11 @@ fun ContactComposable() {
                         fontWeight = FontWeight.Normal
                     ),
                     textAlign = TextAlign.Center,
-                    modifier = Modifier.clickable{
+                    modifier = Modifier.clickable {
                         goTo(localContext, 1)
                     }
 
-                    )
+                )
                 Text(
                     text = " / ",
                     style = TextStyle(
@@ -174,15 +188,15 @@ fun ContactComposable() {
                         fontWeight = FontWeight.Normal
                     ),
                     textAlign = TextAlign.Center,
-                    modifier = Modifier.clickable{
-                       goTo(localContext, 2)
+                    modifier = Modifier.clickable {
+                        goTo(localContext, 2)
                     }
-                    )
+                )
             }
 
             Spacer(modifier = Modifier.height(5.dp))
             Text(
-                text = "+91 93617 76015",
+                text = "+91 ${AppConstants.phoneNum}",
                 style = TextStyle(
                     color = Color.Black,
                     fontSize = bodyFontSmallSize,
@@ -195,7 +209,7 @@ fun ContactComposable() {
             )
             Spacer(modifier = Modifier.height(14.dp))
             Text(
-                text = "Email: support@crackupacademy.in",
+                text = "Email: ${AppConstants.emailId}",
                 textAlign = TextAlign.Center,
                 style = TextStyle(
                     color = lightBlue,
@@ -206,13 +220,15 @@ fun ContactComposable() {
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(10.dp)
-                    .clickable{
+                    .clickable {
                         goTo(localContext, 3)
                     }
             )
-            Spacer(modifier = Modifier
-                .fillMaxWidth()
-                .height(14.dp))
+            Spacer(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(14.dp)
+            )
             OutlinedInputField(
                 keyboardType = KeyboardType.Email,
                 label = "Full Name",

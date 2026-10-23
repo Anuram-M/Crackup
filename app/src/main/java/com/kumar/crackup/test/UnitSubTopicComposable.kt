@@ -29,7 +29,7 @@ fun UnitSubTopicComposable(navController: NavHostController, viewModel: MyViewMo
         val unitSubTopics = unit?.unitTopics.orEmpty()
         val unitSubTopicsEnglish = unit?.unitTopicsEnglish.orEmpty()
         Box(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.weight(1f)
         ) {
 
             SelectionList(items = unitSubTopics.map { it.toString() to it }) { name ->

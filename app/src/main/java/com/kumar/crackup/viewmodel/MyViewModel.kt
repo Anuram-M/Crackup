@@ -31,6 +31,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -41,7 +43,7 @@ class MyViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
     private val loadingManager: LoadingManager,
     private val dailyChallengeDAO: DailyChallengeDAO
-): ViewModel() {
+) : ViewModel() {
 
     private val _initialNav = Channel<NavStateClass>(Channel.BUFFERED)
     val initialNav = _initialNav.receiveAsFlow()
@@ -57,19 +59,6 @@ class MyViewModel @Inject constructor(
 
     private val connectivityObserver = NetworkConnectivityObserver(context)
 
-    val networkStatus: StateFlow<NetworkStatus> = connectivityObserver.networkStatus
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = NetworkStatus.Available
-        )
-
-    val currentUser =  FirebaseUtil.getCurrentUser().stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.Eagerly,
-        initialValue = null
-    )
-
     private val _exams = MutableStateFlow<List<Exam>>(emptyList())
     val exams: StateFlow<List<Exam>> = _exams.asStateFlow()
 
@@ -80,7 +69,6 @@ class MyViewModel @Inject constructor(
     val selectedUnit: StateFlow<TamilUnit?> = _selectedUnit.asStateFlow()
 
     val currentTopic = MutableStateFlow<Topic?>(null)
-
 
     private val _subTopics = MutableStateFlow<List<SubTopic>>(emptyList())
     val subTopics: StateFlow<List<SubTopic>> = _subTopics.asStateFlow()
@@ -97,26 +85,52 @@ class MyViewModel @Inject constructor(
     val _dailyChallenge = MutableStateFlow<DailyChallengeUiState>(DailyChallengeUiState())
     val dailyChallenge = _dailyChallenge.asStateFlow()
 
-    val topicProgress = FirebaseUtil.getTopicProgress().stateIn(
+    val _globalTotalQuestions = MutableStateFlow<Int>(0)
+    val globalTotal = _globalTotalQuestions.asStateFlow()
+
+    val networkStatus: StateFlow<NetworkStatus> = connectivityObserver.networkStatus
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = NetworkStatus.Available
+        )
+
+    val currentUser = FirebaseUtil.getCurrentUser().stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.Eagerly,
+        initialValue = null
+    )
+
+    val topicProgress = currentUser.flatMapLatest { user ->
+        if(user != null) {
+            FirebaseUtil.getTopicProgress()
+        } else {
+            flowOf(emptyList())
+        }
+    }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
         initialValue = emptyList()
     )
-    val globalProgress = FirebaseUtil.getGlobalProgress().stateIn(
+
+    val globalProgress = currentUser.flatMapLatest { user ->
+        if(user != null) {
+            FirebaseUtil.getGlobalProgress()
+        } else {
+            flowOf(null)
+        }
+    }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
         initialValue = null
     )
 
-    val _globalTotalQuestions = MutableStateFlow<Int>(0)
-    val globalTotal = _globalTotalQuestions.asStateFlow()
-
     val monthlyActivity = FirebaseUtil.getMonthlyActivity()
-    .stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
-        initialValue = emptyList()
-    )
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
+        )
 
     init {
         viewModelScope.launch {
@@ -134,13 +148,12 @@ class MyViewModel @Inject constructor(
             dailyChallengeDAO.getDailyChallenge().collect { data ->
                 when {
                     data == null -> {
-                        Log.d("ROOMD", ": room data null ${data}")
                         val questions = FirebaseUtil.getDailyChallenge()
                         _dailyChallenge.value = _dailyChallenge.value.copy(questions = questions)
                         dailyChallengeDAO.insetQuestions(_dailyChallenge.value.toDailyChallengeForRoom())
                     }
+
                     (!data.date.equals(todayDate)) -> {
-                        Log.d("ROOMD", ": room data yesterday: ${data}")
                         dailyChallengeDAO.deleteAllQuestions()
                         val questions = FirebaseUtil.getDailyChallenge()
                         _dailyChallenge.value = _dailyChallenge.value.copy(questions = questions)
@@ -149,7 +162,6 @@ class MyViewModel @Inject constructor(
                     }
 
                     (data.date.equals(todayDate)) -> {
-                        Log.d("ROOMD", ": room data today ${data}")
                         _dailyChallenge.value = DailyChallengeUiState(
                             questions = data.questions,
                             attempted = data.answeredQuestions,
@@ -162,16 +174,9 @@ class MyViewModel @Inject constructor(
             }
         }
     }
-    fun updateDailyChallenge() {
-        viewModelScope.launch {
-//            val questions = FirebaseUtil.getDailyChallenge()
-//            _dailyChallenge.value = _dailyChallenge.value.copy(questions = questions)
-        }
-    }
 
     fun updateRoom(dailyChallengeUiState: DailyChallengeUiState) {
         viewModelScope.launch {
-            Log.d("ROOMD", "updateRoom: ${dailyChallengeUiState.toDailyChallengeForRoom()}")
             dailyChallengeDAO.updateQuestions(dailyChallengeUiState.toDailyChallengeForRoom())
         }
     }
@@ -179,62 +184,46 @@ class MyViewModel @Inject constructor(
     fun calculateGlobalQuestions(topics: List<Topic>): Int {
         return topics.sumOf { it.totalQuestions }
     }
-    fun updateSplashShown(shown: Boolean) {
-        _splashShown.value = shown
-    }
 
-    fun updateNavState(newState: NavStateClass)  {
+    fun addAttempt(
+        attemptModel: AttemptModel,
+        parentName: String,
+        totalQuestions: Int,
+        globalQuestionsCount: Int
+    ) {
         viewModelScope.launch {
-            _initialNav.send(newState)
-        }
-    }
-
-    fun addAttempt(attemptModel: AttemptModel, parentName: String, totalQuestions: Int, globalQuestionsCount: Int) {
-        viewModelScope.launch {
-            Log.d("ERROR", "QuizResultScreen: ${attemptModel}")
             FirebaseUtil.addAttempt(attemptModel, parentName, totalQuestions, globalQuestionsCount)
         }
     }
 
-//    fun getTopicProgress() {
-//        viewModelScope.launch {
-//            _topicProgress.value = FirebaseUtil.getTopicProgress()
-//        }
-//    }
-//    fun getGlobalProgress() {
-//        viewModelScope.launch {
-//            _globalProgress.value = FirebaseUtil.getGlobalProgress()
-//        }
-//    }
-
-//    fun getDailyActivity() {
-//        viewModelScope.launch {
-//            _dailyActivity.value = FirebaseUtil.getDailyActivity()
-////            Log.d(TAG, "getDailyActivity: ${}")
-//        }
-//    }
-    fun topicSelected(newTopic: Topic, onNavToExam: () -> Unit, onNavToSubTopic: () -> Unit, onNavTamilUnits: () -> Unit) {
+    fun topicSelected(
+        newTopic: Topic,
+        onNavToExam: () -> Unit,
+        onNavToSubTopic: () -> Unit,
+        onNavTamilUnits: () -> Unit
+    ) {
 
         viewModelScope.launch {
             _query.value = QueryModel()
-            _query.value = _query.value.copy(mainTopic = newTopic.topicQuery, parentName = newTopic.name, totalQuestions = newTopic.totalQuestions)
-            when(newTopic.type) {
-                 TopicType.EXAM_YEAR -> {
-                     _exams.value = FirebaseUtil.getExams()
-                     onNavToExam()
-                 }
+            _query.value = _query.value.copy(
+                mainTopic = newTopic.topicQuery,
+                parentName = newTopic.name,
+                totalQuestions = newTopic.totalQuestions
+            )
+            when (newTopic.type) {
+                TopicType.EXAM_YEAR -> {
+                    _exams.value = FirebaseUtil.getExams()
+                    onNavToExam()
+                }
 
                 TopicType.SUB_TOPIC -> {
-                     _subTopics.value = emptyList()
-                    Log.d("LUCKY", "topicSelected: ${newTopic}")
+                    _subTopics.value = emptyList()
                     _subTopics.value = FirebaseUtil.getSubTopics(newTopic.id)
-//                    _subTopics.value = FirebaseUtil.getSubTopics("d890df7f-a0eb-4b5a-b8ed-4a30b321d8db")
                     onNavToSubTopic()
                 }
 
                 TopicType.UNIT_SUB_TOPIC -> {
                     _tamilUnits.value = FirebaseUtil.getTamil()
-                    Log.d("LUCKY", "topicSelected: ${units.value}")
                     onNavTamilUnits()
                 }
             }
@@ -249,7 +238,7 @@ class MyViewModel @Inject constructor(
     }
 
     private fun romanNotation(name: String): String {
-        return when(name){
+        return when (name) {
             "Group |" -> "Group 1"
             "Group ||" -> "Group 2"
             else -> "Group"
@@ -273,7 +262,8 @@ class MyViewModel @Inject constructor(
     }
 
     fun onSubTopicSelected(selectedSubTopic: String, onSuccess: () -> Unit) {
-        _query.value = _query.value.copy(subTopic = _query.value.mainTopic, subCollection = selectedSubTopic)
+        _query.value =
+            _query.value.copy(subTopic = _query.value.mainTopic, subCollection = selectedSubTopic)
         onSuccess()
     }
 
@@ -291,26 +281,6 @@ class MyViewModel @Inject constructor(
         isEnglish.value = isEngSelected
     }
 
-//    fun getExams(onSuccess: (List<Exam>) -> Unit, onError: (String) -> Unit) {
-//        viewModelScope.launch {
-//            try {
-//                FirebaseUtil.getExams(
-//                    onSuccess = {
-//                        onSuccess(it)
-//                    },
-//                    onError = {
-//                        onError()
-//                    }
-//                )
-//            } catch (e: Exception) {
-//
-//            }
-//        }
-//
-//    }
-
-
-
     fun signin(input: SignInFormInput, onSuccess: () -> Unit, onError: () -> Unit) {
         viewModelScope.launch {
             loadingManager.show()
@@ -323,7 +293,6 @@ class MyViewModel @Inject constructor(
                 delay(150)
                 loadingManager.hide()
             }
-
         }
     }
 
@@ -353,14 +322,40 @@ class MyViewModel @Inject constructor(
                         onSuccess()
                     },
                     onError = {
-                       onError()
-                    })
+                        onError()
+                    }
+                )
             } catch (e: Exception) {
                 onError()
             } finally {
                 loadingManager.hide()
             }
+        }
+    }
 
+    fun forgotPassword(email: String, result: (String) -> Unit) {
+        viewModelScope.launch {
+            FirebaseUtil.forgotPassword(email, onSuccess= { message ->
+                result(message)
+            },
+                onError = { message ->
+                    result(message)
+                })
+        }
+    }
+    fun deleteUserAccount(onSuccess: () -> Unit, onError: (String) -> Unit) {
+        viewModelScope.launch {
+            try {
+                FirebaseUtil.deleteUser().collect { resultStatus ->
+                    if(resultStatus) {
+                        onSuccess()
+                    } else {
+                        onError("Issue while deleting this account")
+                    }
+                }
+            }catch (e: Exception) {
+                onError(e.message.toString())
+            }
         }
     }
 }

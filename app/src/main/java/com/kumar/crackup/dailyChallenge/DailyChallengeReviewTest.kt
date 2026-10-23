@@ -69,11 +69,11 @@ fun DailyChallengeReviewTest(
             .padding(20.dp)
     ) {
         Column(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxSize()
         ) {
 
 //            DailyChallengeStat(result)
-            LazyColumn() {
+            LazyColumn(modifier = Modifier.weight(1f)) {
                 itemsIndexed(
                     items = questions,
                     key = { _, item -> item.question }) { index, question ->

@@ -184,7 +184,7 @@ fun PracticeIntroComposable(navHostController: NavHostController, myViewModel: M
         }
 
         ColoredButton(
-            roundness = 10.dp,
+//            roundness = 10.dp,
             buttonColor = lightBlue,
             buttonText = "Start Exam 🚀",
             textColor = Color.White,

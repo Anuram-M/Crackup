@@ -8,7 +8,6 @@ import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.fromHtml
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -24,14 +23,9 @@ fun DailyChallengeComposable(navHostController: NavHostController, myViewModel: 
 
     val challengeState by myViewModel.dailyChallenge.collectAsStateWithLifecycle()
 
-    LaunchedEffect(Unit) {
-        myViewModel.updateDailyChallenge()
-    }
-
     val showAnswer = remember { mutableStateOf(challengeState.isCompleted) }
     var currentIndex by remember { mutableStateOf(challengeState.currentQuestionIndex) }
     val answers = remember(challengeState.answers) { mutableStateMapOf(*challengeState.answers.map { it.key to it.value }.toTypedArray()) }
-//    val answers = remember(challengeState.answers) { challengeState.answers.toMutableStateMap() }
 
     LaunchedEffect(Unit) { currentIndex = challengeState.currentQuestionIndex }
 

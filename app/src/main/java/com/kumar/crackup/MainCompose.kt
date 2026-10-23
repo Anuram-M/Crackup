@@ -80,6 +80,7 @@ import com.kumar.crackup.home.Login
 import com.kumar.crackup.home.OnBoarding
 import com.kumar.crackup.notification.NotificationComposable
 import com.kumar.crackup.onboarding.OnboardingComposable
+import com.kumar.crackup.privacyPolicy.PrivacyPolicyComposable
 import com.kumar.crackup.profile.ProfileComposable
 import com.kumar.crackup.progress.ProgressComposable
 import com.kumar.crackup.states.BottomItem
@@ -210,30 +211,6 @@ fun MainCompose(myViewModel: MyViewModel = hiltViewModel()) {
                                     .padding(10.dp),
                                 contentDescription = null
                             )
-                            //hidden for now
-//                            NavigationDrawerItem(
-//                                icon = {
-//                                    Icon(
-//                                        painter = painterResource(R.drawable.subscription),
-//                                        contentDescription = null,
-//                                        modifier = Modifier.size(24.dp),
-//                                        tint = Color.Black
-//                                    )
-//                                }, label = {
-//                                    Text(
-//                                        "Subscriptions",
-//                                        style = TextStyle(
-//                                            color = Color.Black,
-//                                            fontSize = bodyFontSize,
-//                                            fontWeight = FontWeight.Medium
-//                                        ),
-//                                    )
-//                                }, selected = false, onClick = {
-//                                    coroutineScope.launch {
-//                                        drawerState.close()
-//                                    }
-//                                    navController.navigate("subscription")
-//                                })
                             NavigationDrawerItem(icon = {
                                 Icon(
                                     painter = painterResource(R.drawable.faq),
@@ -277,6 +254,31 @@ fun MainCompose(myViewModel: MyViewModel = hiltViewModel()) {
                                     drawerState.close()
                                 }
                                 navController.navigate("contact") {
+                                    popUpTo("home")
+                                }
+                            })
+                            NavigationDrawerItem(icon = {
+                                Icon(
+                                    painter = painterResource(R.drawable.about_us),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(24.dp),
+                                    tint = Color.Black
+                                )
+                            },label = {
+                                Text(
+                                    "Privacy Policy",
+                                    style = TextStyle(
+                                        color = Color.Black,
+                                        fontSize = bodyFontSize,
+                                        fontFamily = bodyFont,
+                                        fontWeight = FontWeight.SemiBold
+                                    ),
+                                )
+                            }, selected = false, onClick = {
+                                coroutineScope.launch {
+                                    drawerState.close()
+                                }
+                                navController.navigate("privacy") {
                                     popUpTo("home")
                                 }
                             })
@@ -505,12 +507,13 @@ fun MainCompose(myViewModel: MyViewModel = hiltViewModel()) {
                 composable("subTopics") { SubTopicsComposable(navController, myViewModel) }
                 composable("currentaffairs") { Entry(navController) }
                 composable("ca_daily") { CurrentAffairsScreen(navController, myViewModel)}
-                composable("ca_details") { ArticleDetailPreview()}
+                composable("ca_details") { ArticleDetailPreview() }
                 composable("ca_monthly") { DynamicMonthCurrentAffairsComposable() }
                 composable("ca_quiz") { CurrentAffairsScreen(navController, myViewModel) }
                 composable("currentaffairsold") { CurrentAffairsScreen(navController, myViewModel) }
                 composable("notification") { NotificationComposable(navController, myViewModel) }
                 composable("dailyChallenge") { DailyChallengeComposable(navController, myViewModel) }
+                composable("privacy") { PrivacyPolicyComposable() }
             }
         }
     }

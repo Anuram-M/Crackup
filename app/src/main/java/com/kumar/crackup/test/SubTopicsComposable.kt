@@ -27,7 +27,7 @@ fun SubTopicsComposable(navController: NavHostController, viewModel: MyViewModel
     var emptyTopic by remember { mutableStateOf<String?>(null) }
     ScreenScaffold(title = "Select Sub-Topic") {
         Box(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.weight(1f)
         ) {
 
             if(isEnglish) {

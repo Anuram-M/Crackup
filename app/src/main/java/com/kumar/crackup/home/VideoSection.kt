@@ -50,7 +50,6 @@ fun VideoSection(lifecycleOwner: LifecycleOwner) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 20.dp, vertical = 10.dp)
-            .verticalScroll(scrollState)
     ) {
         Column() {
             Card(

@@ -1,5 +1,6 @@
 package com.kumar.crackup.profile
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -24,6 +25,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -31,11 +33,13 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.kumar.crackup.UserModel
+import com.kumar.crackup.home.Login
 import com.kumar.crackup.model.NewTopicProgress
 import com.kumar.crackup.model.StatItem
 import com.kumar.crackup.templates.BodyText
 import com.kumar.crackup.templates.ColoredButton
 import com.kumar.crackup.templates.HeaderText
+import com.kumar.crackup.templates.HeightSpacer
 import com.kumar.crackup.templates.Selector
 import com.kumar.crackup.templates.SubHeaderText
 import com.kumar.crackup.ui.theme.BaseAppTheme
@@ -69,26 +73,37 @@ fun String.toInitials(): String {
 @Composable
 fun ProfileComposable(navHostController: NavHostController, myViewModel: MyViewModel) {
 
-
-    val topicProgress by myViewModel.topicProgress.collectAsStateWithLifecycle()
     val globalProgress by myViewModel.globalProgress.collectAsStateWithLifecycle()
     val user by myViewModel.currentUser.collectAsStateWithLifecycle()
 
-    LaunchedEffect(Unit) {
-//        if(topicProgress.isEmpty()) {
-//            myViewModel.getTopicProgress()
-//            myViewModel.getGlobalProgress()
-//        }
-    }
-    ProfileContent(navHostController, user, globalProgress, onLogout = {
-        myViewModel.logout(onSuccess = {
-            PreferenceUtil.putBoolean(PrefConstants.IS_LOGGED_IN, false)
-            PreferenceUtil.putBoolean(PrefConstants.SHOW_CONTACT, false)
-            navHostController.navigate("login") {
-                popUpTo(0)
-            }
-        }, onError = {})
-    })
+    val context = LocalContext.current.applicationContext
+    ProfileContent(
+        navHostController, user, globalProgress,
+        onLogout = {
+            myViewModel.logout(onSuccess = {
+                PreferenceUtil.putBoolean(PrefConstants.IS_LOGGED_IN, false)
+                PreferenceUtil.putBoolean(PrefConstants.SHOW_CONTACT, false)
+                navHostController.navigate(Login) {
+                    popUpTo(0)
+                }
+            }, onError = {})
+        },
+        onDeleteAccount = {
+             myViewModel.deleteUserAccount(
+                 onSuccess = {
+                     PreferenceUtil.putBoolean(PrefConstants.IS_LOGGED_IN, false)
+                     PreferenceUtil.putBoolean(PrefConstants.SHOW_CONTACT, false)
+                     navHostController.navigate(Login) {
+                         popUpTo(0)
+                     }
+                     navHostController.navigate(Login)
+                 },
+                 onError = {
+                     Toast.makeText(context, "Error: ${it}", Toast.LENGTH_SHORT).show()
+                 }
+             )
+        },
+    )
 }
 
 @Composable
@@ -96,7 +111,8 @@ fun ProfileContent(
     navHostController: NavHostController,
     user: UserModel?,
     globalProgress: NewTopicProgress?,
-    onLogout: () -> Unit
+    onLogout: () -> Unit,
+    onDeleteAccount: () -> Unit,
 ) {
     val testTaken = globalProgress?.attemptsCount ?: "-"
     val accuracy = globalProgress?.accuracyPercent ?: 0f
@@ -240,51 +256,7 @@ fun ProfileContent(
 
                                     })
                             }
-
                         }
-
-                        //needs to be hidden for now
-//                        Row(
-//                            modifier = Modifier
-//                                .fillMaxWidth()
-//                                .padding(horizontal = 10.dp, vertical = 5.dp),
-//                            verticalAlignment = Alignment.CenterVertically
-//                        ) {
-//                            Box(
-//                                modifier = Modifier
-//                                    .size(emojiBoxSize)
-//                                    .background(
-//                                        color = lightBlue.copy(alpha = 0.3f),
-//                                        shape = RoundedCornerShape(10.dp)
-//                                    ),
-//                                contentAlignment = Alignment.Center
-//                            ) {
-//                                BodyText(
-//                                    text = "💳", modifier = Modifier, textColor = Color.Gray,
-//                                    textSize = bodyFontLargeSize
-//                                )
-//                            }
-//                            Column(
-//                                modifier = Modifier
-//                                    .weight(1f)
-//                                    .padding(horizontal = 10.dp)
-//                            ) {
-//                                SubHeaderText(text = "Subscription", modifier = Modifier)
-//                                BodyText(
-//                                    text = "Free plan", modifier = Modifier, textColor = Color.Gray,
-//                                    textSize = bodyFontTinySize
-//                                )
-//
-//                            }
-//                            GradientButton(
-//                                onButtonClick = { navHostController.navigate("subscription") },
-//                                buttonText = "Upgrade",
-//                                textColor = Color.White,
-//                                gradientColors = linearGradient1e,
-//                                modifier = Modifier.weight(1f)
-//                            )
-//                        }
-
                     }
                 }
                 Spacer(
@@ -345,9 +317,21 @@ fun ProfileContent(
                                     })
                             }
                         }
-
                     }
                 }
+//                ColoredButton(
+//                    roundness = 10.dp,
+//                    onButtonClick = {
+//                        onDeleteAccount()
+//                    },
+//                    buttonText = "Delete Account",
+//                    textColor = Color.Red,
+//                    buttonColor = Color.White,
+//                    modifier = Modifier
+//                        .fillMaxWidth()
+//                        .padding(vertical = 15.dp)
+//                )
+//                HeightSpacer()
                 ColoredButton(
                     roundness = 10.dp,
                     onButtonClick = {

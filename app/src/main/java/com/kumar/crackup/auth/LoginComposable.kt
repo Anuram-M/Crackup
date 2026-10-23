@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -23,7 +24,10 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -38,6 +42,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -46,7 +51,11 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.kumar.crackup.R
 import com.kumar.crackup.components.BottomSheet
+import com.kumar.crackup.privacyPolicy.PrivacyPolicyComposable
+import com.kumar.crackup.privacyPolicy.PrivacyPolicyContent
+import com.kumar.crackup.templates.BodyText
 import com.kumar.crackup.templates.GradientButton
 import com.kumar.crackup.templates.OutlinedInputField
 import com.kumar.crackup.ui.theme.bodyFont
@@ -59,6 +68,7 @@ import com.kumar.crackup.ui.theme.heroFontSize
 import com.kumar.crackup.ui.theme.lightBlue
 import com.kumar.crackup.ui.theme.linearGradient1
 import com.kumar.crackup.ui.theme.linearGradient2
+import com.kumar.crackup.ui.theme.textBlack
 import com.kumar.crackup.ui.theme.textBlue
 import com.kumar.crackup.util.PrefConstants
 import com.kumar.crackup.util.PreferenceUtil
@@ -126,21 +136,12 @@ fun LoginComposable(navHostController: NavHostController, myViewModel: MyViewMod
     )
 
     var showSheet by remember { mutableStateOf(false) }
+    var showPolicy = remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
     var exportedPath by remember { mutableStateOf<String?>(null) }
     Box(modifier = Modifier
         .fillMaxSize(),
         contentAlignment = Alignment.Center) {
-//        when(auth) {
-//            is AuthState.Loading -> {
-//                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-//                    CircularProgressIndicator()
-//                }
-//            }
-//            is AuthState.Error ->  {
-//                Toast.makeText(context, "error", Toast.LENGTH_SHORT).show()
-//            }
-//            is AuthState.Idle -> {
             Card (
                 modifier = Modifier
 //                .fillMaxSize()
@@ -278,75 +279,28 @@ fun LoginComposable(navHostController: NavHostController, myViewModel: MyViewMod
                             password = newText
                             if(passwordError != null) passwordError = null
                         }
-
+                        TextButton(
+                            modifier = Modifier.fillMaxWidth(),
+                            onClick = {
+                                showPolicy.value = true
+                            }
+                        ) {
+                            BodyText(
+                                text = "Privacy Policy",
+                                modifier = Modifier.fillMaxWidth(),
+                                textAlign = TextAlign.Center,
+                                textColor = lightBlue,
+                                textSize = bodyFontSmallSize
+                            )
+                        }
                         GradientButton(
                             buttonText = "Login",
                             textColor = Color.White,
                             gradientColors = linearGradient2,
                             onButtonClick = {
-                                Log.d("CRACK", "LoginComposable: check")
-//                                if(userEmail.isNotEmpty() && password.isNotEmpty()) {
-////                                showSheet = true
-//                                FirestoreContent.subTopics.forEach {
-//                                    FirebaseUtil.putSubTopics(it)
-//                                }
-//                                FirebaseUtil.putExams(
-//                                    Exam()
-//                                )
                                     attemptSignIn(context, myViewModel, navHostController)
-//                                }
                             }
                         )
-
-//                        Button(onClick = {
-//                            coroutineScope.launch {
-////                                val file = FirebaseUtil.exportQuestionsToLocalFile(
-////                                    context,
-////                                    FirebaseFirestore.getInstance()
-////                                )
-//////                                exportedPath = file.absolutePath
-////                                val file = File(
-////                                    context.getExternalFilesDir(null),
-////                                    "exports/questions_export.json"
-////                                )
-//// val questions: List<Question> = FirebaseUtil.readQuestionsFromJsonFile(file)
-////                                Log.d("FIRELET", "LoginComposable: ${questions}")
-////                                val file3 = File(context.getExternalFilesDir(null), "exports/newquestions_readable.kt")
-////                                val list = JSONToKotlinConverter.convertToNewModel()
-////                                Log.d("FIRELET", "LoginComposable: ${list}")
-////                                file3.writeText(list.toString())
-//
-////                                FirestoreContent.tamilUnits.forEach {
-////                                    FirebaseUtil.putTamil(it)
-////                                }
-////
-////                                // 1. Read JSON file directly into your model list
-////                                val jsonString = File(context.getExternalFilesDir(null), "exports/questions_export.json").readText()
-////                                val questions: List<Question> = Gson().fromJson(jsonString, object : TypeToken<List<Question>>() {}.type)
-////
-////                                questions.forEach {
-//////                                    Log.d("FIRELET", "LoginComposable: ${it.toNewQuestion()}")
-////                                    FirebaseUtil.putNewQuestion(it.toNewQuestion())
-////                                }
-////// 2. Upload to Firestore in one quick loop
-////                                val collection = FirebaseFirestore.getInstance().collection("aptitude_questions")
-//                                subTopics.forEach {
-//                                    FirebaseUtil.putSubTopics(it)
-//                                }
-////                                     val jsonFile = File(context.getExternalFilesDir(null), "exports/questions_export.json")
-////                                     val kotlinFile = JSONToKotlinConverter.convertJsonFileToKotlinFile(context, jsonFile, outputFileName = "NewQuestionsEditable.kt")
-//
-////                                val list = backupQuestions
-////                                list.forEach {
-////                                    FirebaseUtil.putNewQuestion(it)
-////                                }
-//     //
-//                            }
-//                        }) {
-//                            Text("Export Questions")
-//                        }
-//                        exportedPath?.let { Text("Saved to: $it") }
-
                         Text(
                             text = "Forgot Password?",
                             textAlign = TextAlign.Center,
@@ -358,6 +312,12 @@ fun LoginComposable(navHostController: NavHostController, myViewModel: MyViewMod
                             ),
                             modifier = Modifier
                                 .fillMaxWidth()
+                                .clickable{
+                                    myViewModel.forgotPassword(userEmail,
+                                        result = { message ->
+                                            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                                        })
+                                }
                                 .padding(10.dp)
                         )
                         Spacer(
@@ -533,6 +493,21 @@ fun LoginComposable(navHostController: NavHostController, myViewModel: MyViewMod
                                 password = newText
                             }
 
+                            TextButton(
+                                modifier = Modifier.fillMaxWidth(),
+                                onClick = {
+                                    showPolicy.value = true
+                                }
+                            ) {
+                                BodyText(
+                                    text = "Privacy Policy",
+                                    modifier = Modifier.fillMaxWidth(),
+                                    textAlign = TextAlign.Center,
+                                    textColor = lightBlue,
+                                    textSize = bodyFontSmallSize
+                                )
+                            }
+
                             GradientButton(
                                 buttonText = "Login",
                                 textColor = Color.White,
@@ -598,10 +573,6 @@ fun LoginComposable(navHostController: NavHostController, myViewModel: MyViewMod
                         }
                     }
 
-//            }
-//            }
-//            AuthState.Success -> navHostController.navigate("home")
-
 
                 if(showSheet) {
                     BottomSheet(sheetState = sheetState, onClose = {}) {
@@ -623,9 +594,43 @@ fun LoginComposable(navHostController: NavHostController, myViewModel: MyViewMod
                         }
                     }
                 }
+
+
         }
+        if(showPolicy.value) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(textBlack.copy(alpha = 0.4f))
+                    .padding(20.dp),
+            ) {
+                Card(modifier = Modifier.fillMaxWidth().verticalScroll(rememberScrollState()),
+                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 10.dp)) {
+                    PrivacyPolicyContent()
+                }
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                ) {
+                    IconButton(
+                        onClick = {
+                            showPolicy.value = false
+                        },
+                        modifier = Modifier.align(Alignment.TopEnd).size(30.dp)
+                    ) {
 
+                        Icon(
+                            painter = painterResource(R.drawable.close2),
+                            contentDescription = null,
+                            tint = Color.Black,
+                            modifier = Modifier
+                                .size(20.dp)
 
-
+                        )
+                    }
+                }
+            }
+        }
     }
 }

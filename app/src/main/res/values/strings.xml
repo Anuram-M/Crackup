@@ -1,3 +1,70 @@
 <resources>
     <string name="app_name">CrackUp</string>
+    <string name="privacy_policy_content"><![CDATA[
+
+<b><h3>CrackUp Privacy Policy</h3></b><br><br>
+
+<b>1. Introduction</b><br>
+&nbsp;&nbsp;&nbsp;&nbsp;CrackUp Academy ("CrackUp", "we", "our", or "us") provides educational services for competitive-examination aspirants, including TNPSC study materials, practice questions, previous-year questions, mock tests, current affairs, courses, and related features. This Privacy Policy explains how information may be collected, used, stored, and shared when you use our website or services.<br><br>
+
+<b>2. Information We Collect</b><br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;<b>Information you provide:</b> When you contact us through the website, we may receive your name, mobile number, email address, and message. If you create an account or enrol in a course, we may process account and enrolment information such as your name, contact details, user identifier, and subscription status.<br><br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;<b>Educational activity:</b> Where these features are enabled, we may process test attempts, submitted answers, scores, accuracy, progress, practice history, course access, and rankings to provide the learning service.<br><br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;<b>Payments:</b> If you purchase a paid package, payment providers may process payment credentials. CrackUp may receive transaction references, order details, and payment status. Do not send card details, passwords, or OTPs to us through a contact form or message.<br><br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;<b>Technical information:</b> Depending on the features in use, technical logs such as browser/device type, application activity, error reports, and security logs may be processed to operate, maintain, and secure the service.<br><br>
+
+<b>3. How We Use Information</b><br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;• To respond to enquiries and provide customer support.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;• To create and manage accounts and provide courses, tests, materials, and related features.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;• To record test results, show progress, and calculate rankings where available.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;• To process purchases, confirm transactions, and manage subscriptions.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;• To maintain security, prevent misuse, troubleshoot errors, and improve our services.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;• To comply with applicable legal obligations and respond to lawful requests.<br><br>
+
+<b>4. WhatsApp and Contact Enquiries</b><br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;When you submit the website contact form, the information you enter may be used to prepare an enquiry message and open WhatsApp. If you choose to send that message, it will be handled by WhatsApp under its own terms and privacy policy. Please review the message before sending it.<br><br>
+
+<b>5. Cookies and Similar Technologies</b><br>
+&nbsp;&nbsp;&nbsp;&nbsp;The website may use browser storage, cookies, or similar technologies for essential functionality, session management, preferences, and security. You can manage cookies through your browser settings, although disabling them may affect some features.<br><br>
+
+<b>6. Service Providers and Sharing</b><br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;We do not sell your personal information. Where necessary to operate the service, information may be processed by service providers for hosting, database storage, account authentication, payment processing, communications, or technical support. The website uses Firebase-related services and includes a payment-provider integration; the actual information processed depends on which features are enabled and used.<br><br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;We may also disclose information when required by law, to respond to valid legal process, to protect users and the service, or in connection with a lawful business transfer. Service providers may handle information under their own privacy notices and applicable agreements.<br><br>
+
+<b>7. Data Retention</b><br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;We retain information for as long as reasonably necessary to provide the service, maintain learning and transaction records, resolve disputes, protect security, and meet legal obligations. Retention periods depend on the type of information and purpose. Deleting the website shortcut or app from your device does not necessarily delete account information stored by the service.<br><br>
+
+<b>8. Security</b><br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;We use reasonable measures intended to protect information against unauthorized access, loss, alteration, or disclosure. No online service or storage system can be guaranteed completely secure. Keep your passwords and OTPs confidential and contact us if you suspect unauthorised account activity.<br><br>
+
+<b>9. Your Choices and Requests</b><br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;Subject to applicable law, you may request access to, correction of, or deletion of personal information, and may withdraw consent where processing is based on consent. We may need to verify your identity before processing a request. Some information may need to be retained to meet legal requirements or resolve disputes.<br><br>
+
+<b>10. Children and Minors</b><br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;CrackUp is designed for examination aspirants. If a user is under 18, we will handle their information in accordance with applicable Indian law and any required age-related safeguards or parental/guardian consent. If you believe personal information has been collected inappropriately, please contact us.<br><br>
+
+<b>11. Third-Party Links</b><br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;Our website may link to third-party services, including WhatsApp, YouTube, authentication services, or payment providers. Their privacy practices are governed by their own policies. We encourage you to review those policies before using those services.<br><br>
+
+<b>12. Changes to This Policy</b><br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;We may update this Privacy Policy as our services or legal requirements change. The revised version will be published on this page with an updated date. Where required by law, we will provide notice or obtain consent.<br><br>
+
+<b>13. Applicable Law</b><br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;This policy is intended to be interpreted in accordance with applicable laws of India, including applicable data-protection and consumer-protection requirements.
+    ]]></string>
 </resources>

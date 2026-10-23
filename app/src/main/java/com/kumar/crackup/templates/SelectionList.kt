@@ -23,8 +23,12 @@ import com.kumar.crackup.R
 import com.kumar.crackup.ui.theme.lightBlue
 
 @Composable
-fun <T> SelectionList(items: List<Pair<String, T>>, onItemClick: (T) -> Unit) {
-    LazyColumn(verticalArrangement = Arrangement.spacedBy(10.dp), modifier = Modifier.padding(vertical = 10.dp)) {
+fun <T> SelectionList(
+    items: List<Pair<String, T>>,
+    modifier: Modifier = Modifier,
+    onItemClick: (T) -> Unit
+) {
+    LazyColumn(verticalArrangement = Arrangement.spacedBy(10.dp), modifier = modifier.padding(vertical = 10.dp)) {
         items(items) { (label, value) ->
             Card(
                 colors = CardDefaults.cardColors(containerColor = Color.White),
