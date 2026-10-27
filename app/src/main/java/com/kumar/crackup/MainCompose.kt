@@ -449,7 +449,11 @@ fun MainCompose(myViewModel: MyViewModel = hiltViewModel()) {
             containerColor = screenBackground,
             bottomBar = {
                 if (shouldShowBottomBar)
-                    CustomBottomNavigation(currentRoute = currentBottomRoute) { newRoute -> navController.navigate(newRoute) }
+                    CustomBottomNavigation(currentRoute = currentBottomRoute) { newRoute ->
+                        if(newRoute != currentRoute) {
+                            navController.navigate(newRoute)
+                        }
+                    }
             },
             floatingActionButton = {}
         ) { innerPadding ->

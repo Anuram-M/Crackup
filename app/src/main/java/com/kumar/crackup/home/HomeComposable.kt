@@ -121,7 +121,11 @@ fun HomeComposable(
                     isPaused = dailyChallenge.isPaused,
                     dailyProgress = if (dailyChallenge == null || dailyChallenge.attempted == 0) 0.0f else (dailyChallenge.attempted).toFloat() / 10,
                     onStartQuizClick = {
-                        showConfirmation.value = true
+                        if (dailyChallenge == null || dailyChallenge.attempted == 0) {
+                            navHostController.navigate("dailyChallenge")
+                        } else {
+                            showConfirmation.value = true
+                        }
 //                        navHostController.navigate("dailyChallenge")
                         //need to add functionality
                     }
@@ -207,7 +211,7 @@ fun HomeComposable(
         if (showConfirmation.value)
             DailyChallengeConfirmationDialog(
                 isPaused = true,
-                progress = 20,
+                progress = dailyChallenge.attempted,
                 onFreshStart = {
                     showConfirmation.value = false
 

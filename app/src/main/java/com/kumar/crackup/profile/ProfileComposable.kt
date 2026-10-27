@@ -1,6 +1,7 @@
 package com.kumar.crackup.profile
 
 import android.widget.Toast
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -15,12 +16,17 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -28,6 +34,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -36,6 +43,7 @@ import com.kumar.crackup.UserModel
 import com.kumar.crackup.home.Login
 import com.kumar.crackup.model.NewTopicProgress
 import com.kumar.crackup.model.StatItem
+import com.kumar.crackup.templates.BigHeightSpacer
 import com.kumar.crackup.templates.BodyText
 import com.kumar.crackup.templates.ColoredButton
 import com.kumar.crackup.templates.HeaderText
@@ -44,10 +52,12 @@ import com.kumar.crackup.templates.Selector
 import com.kumar.crackup.templates.SubHeaderText
 import com.kumar.crackup.ui.theme.BaseAppTheme
 import com.kumar.crackup.ui.theme.bodyFontLargeSize
+import com.kumar.crackup.ui.theme.bodyFontSize
 import com.kumar.crackup.ui.theme.heroFont
 import com.kumar.crackup.ui.theme.heroFontLargeSize
 import com.kumar.crackup.ui.theme.lightBlue
 import com.kumar.crackup.ui.theme.lightPink
+import com.kumar.crackup.ui.theme.textBlack
 import com.kumar.crackup.util.PrefConstants
 import com.kumar.crackup.util.PreferenceUtil
 import com.kumar.crackup.viewmodel.MyViewModel
@@ -117,6 +127,7 @@ fun ProfileContent(
     val testTaken = globalProgress?.attemptsCount ?: "-"
     val accuracy = globalProgress?.accuracyPercent ?: 0f
     val streak = user?.currentStreak ?: 0
+    val showDeleteCaution = remember { mutableStateOf(false) }
     val stats = listOf(
         StatItem(
             stat = "${testTaken}",
@@ -140,11 +151,12 @@ fun ProfileContent(
             modifier = Modifier
                 .fillMaxSize()
 //            .background(Color(0xffDCE3FA))
-                .padding(horizontal = 20.dp)
+
         ) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
+                    .padding(horizontal = 20.dp)
                     .verticalScroll(rememberScrollState()),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
@@ -319,18 +331,19 @@ fun ProfileContent(
                         }
                     }
                 }
-//                ColoredButton(
-//                    roundness = 10.dp,
-//                    onButtonClick = {
+                ColoredButton(
+                    roundness = 10.dp,
+                    onButtonClick = {
+                        showDeleteCaution.value = true
 //                        onDeleteAccount()
-//                    },
-//                    buttonText = "Delete Account",
-//                    textColor = Color.Red,
-//                    buttonColor = Color.White,
-//                    modifier = Modifier
-//                        .fillMaxWidth()
-//                        .padding(vertical = 15.dp)
-//                )
+                    },
+                    buttonText = "Delete Account",
+                    textColor = Color.Red,
+                    buttonColor = Color.White,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 15.dp)
+                )
 //                HeightSpacer()
                 ColoredButton(
                     roundness = 10.dp,
@@ -344,6 +357,64 @@ fun ProfileContent(
                         .fillMaxWidth()
                         .padding(vertical = 15.dp)
                 )
+            }
+
+            if(showDeleteCaution.value) {
+                Box(modifier = Modifier
+                    .fillMaxSize()
+                    .background(textBlack.copy(alpha = 0.3f)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Box(modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(20.dp)
+                        .background(color = Color.White, shape = RoundedCornerShape(20.dp)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Column(
+                            modifier = Modifier.fillMaxWidth().padding(20.dp), horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                        HeaderText(text = "Delete Account", modifier = Modifier.align(Alignment.CenterHorizontally))
+                            HeightSpacer()
+                            BodyText(
+                                text = "This action will erase every progress you have made so far, are you sure to delete this account?",
+                                fontWeight = FontWeight.Bold,
+                                textColor = textBlack,
+                                textAlign = TextAlign.Center
+                            )
+                            BigHeightSpacer()
+                            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceAround) {
+                                OutlinedButton(
+                                    border = BorderStroke(1.dp, color = lightBlue),
+                                    colors = ButtonDefaults.buttonColors(containerColor = Color.White),
+                                    onClick = {
+                                        showDeleteCaution.value = false
+                                    }
+                                ) {
+                                    BodyText(
+                                        text = "Cancel",
+                                        textSize = bodyFontSize,
+                                        textColor = lightBlue,
+                                        fontWeight = FontWeight.Normal
+                                    )
+                                }
+                                Button(
+                                    colors = ButtonDefaults.buttonColors(containerColor = lightBlue),
+                                    onClick = {
+//                                        onDeleteAccount()
+                                    }
+                                ) {
+                                    BodyText(
+                                        text = "Yes, delete",
+                                        textSize = bodyFontSize,
+                                        textColor = Color.White,
+                                        fontWeight = FontWeight.Normal
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
     }
